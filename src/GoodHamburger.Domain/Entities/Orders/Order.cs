@@ -83,7 +83,7 @@ namespace GoodHamburger.Domain.Entities.Orders
             if (item is null)
                 throw new DomainException("Item não encontrado no pedido.");
 
-            item.ChangeQuantity(quantity);
+            item.ChangeQuantity(quantity, item.Product);
             CalculateTotalPrice();
         }
 
