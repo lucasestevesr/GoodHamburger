@@ -3,16 +3,34 @@ using GoodHamburger.Domain.Entities.Products;
 
 namespace GoodHamburger.Domain.Entities.Orders
 {
-    public class OrderItem : BaseEntity
+    public sealed class OrderItem
     {
-        public int Quantity { get; set; }       
+        public Order Order { get; set; } = null!;
+        public Guid OrderId { get; set; }
+       
+        public Product Product { get; set; } =  null!;
+        public Guid ProductId { get; set; }
+
+        public int Quantity { get; private set; }
+        
         /// <summary>
         /// Representa o preço do produto(unitário) no momento do pedido.
         /// </summary>
         public decimal ProductPrice { get; set; }
-        public Order Order { get; set; }
-        public Guid OrderId { get; set; }
-        public Product Product { get; set; }
-        public Guid ProductId { get; set; }
+       
+        /// <summary>
+        /// Representa a categoria do produto no momento do pedido.
+        /// </summary>
+        public ProductCategory Category { get; set; }
+       
+        public decimal LineTotal => ProductPrice * Quantity;
+
+        public void ChangeQuantity(int quantity, Product product)
+        {
+            if (quantity <= 0)
+                throw new DomainException($"Quantidade do produto '{product.Name}' deve ser maior que zero.");
+
+            Quantity = quantity;
+        }
     }
 }

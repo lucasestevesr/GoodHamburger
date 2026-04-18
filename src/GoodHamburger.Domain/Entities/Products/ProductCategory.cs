@@ -3,6 +3,7 @@
     public enum ProductCategory
     {
         Burger,
-        Side
+        Side,
+        Drink
     }
 }
