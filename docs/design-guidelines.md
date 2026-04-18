@@ -1,40 +1,26 @@
-## Clean Arch
+#### Clean Architecture
 
-O projeto é desenvolvido seguindo a arquitetura limpa, onde as camadas são organizadas de forma a promover a separação 
-de responsabilidades e facilitar a manutenção do código. 
+O projeto segue os princípios de Clean Architecture, organizando as camadas para garantir separação de responsabilidades, baixo acoplamento e alta testabilidade.
 
+##### Camadas
 
-A estrutura do projeto é composta pelas seguintes camadas:
+##### Core
 
-Core
-- **Domain**: Contém as entidades, interfaces e regras de negócio do sistema. 
-Esta camada é independente de qualquer tecnologia ou framework específico.
+- Domain: Entidades e regras de negócio. Não depende de nenhuma outra camada.
+- Application: Casos de uso e orquestração da lógica. Depende apenas do Domain.
 
-- **Application**: Contém os casos de uso e a lógica de aplicação. 
-Esta camada é responsável por orquestrar as operações do sistema, utilizando as entidades e interfaces definidas na camada Domain.
+##### Infrastructure
 
-Infrastructure
-- **Infra.Data**: Contém a implementação de acesso a dados, como repositórios e mapeamento de entidades para o banco de dados. 
-Esta camada é responsável por interagir com o banco de dados e fornecer os dados necessários para as camadas superiores.
+- Infra.Data: Implementações de acesso a dados Depende da Application.
 
-Presentation
-- **API**: Contém a implementação da API RESTful, incluindo os controladores, rotas e modelos de I/O. 
-Esta camada é responsável por expor os serviços do sistema para os clientes.
+##### Presentation
 
+- API: Exposição dos endpoints REST e entrada/saída da aplicação. Depende da Application e da Infrastructure.
 
-Essa organização em camadas permite uma melhor modularização do código,
-facilitando a manutenção, testes e evolução do sistema ao longo do tempo.
+##### Dependências
+- Domain → sem dependências
+- Application → depende de Domain
+- Infrastructure → depende de Application
+- API → depende de Application e Infrastructure
 
-As referências seguem,
-
-Camadas externas:
-GoodHamburger.Infra.Data referenciando GoodHamburger.Core.Application
-GoodHamburger.API referenciando GoodHamburger.Core.Application
-GoodHamburger.API referenciando GoodHamburger.Infra.~
-Camadas mais internas:
-GoodHamburger.Application referenciando GoodHamburger.Core.Domain.
-
-Domain: Zero dependências.
-Application: Depende de Domain.
-Infra: Depende de Application.
-API: Depende de Application e Infra.
+Essa organização garante isolamento das regras de negócio, facilitando manutenção, testes e evolução do sistema.
