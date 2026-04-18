@@ -22,7 +22,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoodHamburger.Infra.Data", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoodHamburger.Domain", "src\GoodHamburger.Domain\GoodHamburger.Domain.csproj", "{D76D7E68-0BB7-CEC3-09DE-E408ADFACBFE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoodHamburger.Tests", "tests\GoodHamburger.Tests\GoodHamburger.Tests.csproj", "{9DE6E7BA-D9A6-4038-AB82-00DA55028DDB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoodHamburger.Tests.Unit", "tests\GoodHamburger.Tests\GoodHamburger.Tests.Unit.csproj", "{9DE6E7BA-D9A6-4038-AB82-00DA55028DDB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4. Tests Layer", "4. Tests Layer", "{07C15266-49D2-4EAD-ABE1-A187BCC5D8B0}"
 EndProject
