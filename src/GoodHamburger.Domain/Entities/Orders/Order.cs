@@ -105,10 +105,7 @@ namespace GoodHamburger.Domain.Entities.Orders
         /// </exception>
         public void UpdateItemQuantity(Guid productId, int quantity)
         {
-            var item = Items.SingleOrDefault(i => i.ProductId == productId);
-            if (item is null)
-                throw new DomainException("Item não encontrado no pedido.");
-
+            var item = EnsureItemExists(productId);
             item.QuantityValidation(quantity, item.Product);
             CalculateTotalPrice();
         }
