@@ -33,16 +33,16 @@ namespace GoodHamburger.Domain.Entities.Orders
 
         /// <summary>
         /// Regras de negócio para criação de pedido;
-        /// - não permite duplicidade do mesmo produto;
-        /// - permite no máximo 1 item por categoria (Burger, Side, Drink);
-        /// - quantidade deve ser maior que zero;
-        /// - produto deve estar ativo.
+        /// não permite duplicidade do mesmo produto;
+        /// permite no máximo 1 item por categoria (Burger, Side, Drink);
+        /// quantidade deve ser maior que zero;
+        /// produto deve estar ativo.
         /// </summary>
         /// <param name="product">Produto a ser adicionado.</param>
         /// <param name="quantity">Quantidade desejada de cada item.</param>
         /// <exception cref="ArgumentNullException">Quando <paramref name="product"/> é nulo.</exception>
         /// <exception cref="DomainException">Quando alguma regra de negócio é violada.</exception>
-        public void AddItem(Product product, int quantity)
+        public void AddItemValidation(Product product, int quantity)
         {
             if (product is null) 
                 throw new ArgumentNullException(nameof(product));
@@ -64,7 +64,8 @@ namespace GoodHamburger.Domain.Entities.Orders
                 ProductPrice = product.Price,
             };
 
-            orderItem.ChangeQuantity(quantity, product);
+            orderItem.QuantityValidation(quantity, product);
+            Items.Add(orderItem);
 
             CalculateTotalPrice();
         }
@@ -83,7 +84,7 @@ namespace GoodHamburger.Domain.Entities.Orders
             if (item is null)
                 throw new DomainException("Item não encontrado no pedido.");
 
-            item.ChangeQuantity(quantity, item.Product);
+            item.QuantityValidation(quantity, item.Product);
             CalculateTotalPrice();
         }
 
@@ -92,7 +93,7 @@ namespace GoodHamburger.Domain.Entities.Orders
         /// </summary>
         /// <param name="productId">Identificador do produto.</param>
         /// <exception cref="DomainException">Quando o item não existe no pedido.</exception>
-        public void RemoveItem(Guid productId)
+        public void RemoveItemValidation(Guid productId)
         {
             var item = Items.SingleOrDefault(i => i.ProductId == productId);
             if (item is null)

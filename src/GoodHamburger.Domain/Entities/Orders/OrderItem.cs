@@ -25,7 +25,7 @@ namespace GoodHamburger.Domain.Entities.Orders
        
         public decimal LineTotal => ProductPrice * Quantity;
 
-        public void ChangeQuantity(int quantity, Product product)
+        public void QuantityValidation(int quantity, Product product)
         {
             if (quantity <= 0)
                 throw new DomainException($"Quantidade do produto '{product.Name}' deve ser maior que zero.");

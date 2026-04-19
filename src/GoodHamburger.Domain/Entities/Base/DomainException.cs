@@ -3,7 +3,7 @@
     /// <summary>
     /// Representa violação de regra de negócio do domínio.
     /// </summary>
-    public class DomainException : Exception
+    public class DomainException : InvalidOperationException
     {
         public DomainException(string message) : base(message) { }
     }
