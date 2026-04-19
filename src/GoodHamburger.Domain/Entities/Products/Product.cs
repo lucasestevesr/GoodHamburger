@@ -7,17 +7,17 @@ namespace GoodHamburger.Domain.Entities.Products
     /// </summary>
     public sealed class Product : BaseEntity
     {
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
-        public decimal Price { get; private set; }
+        public decimal Price { get; set; }
 
-        public string? Description { get; private set; }
+        public string? Description { get; set; }
 
-        public ProductCategory Category { get; private set; }
+        public ProductCategory Category { get; set; }
         /// <summary>
         /// Represente se o produto está disponível
         ///</summary>
-        public bool IsActive { get; private set; }
+        public bool IsActive { get; set; }
 
         /// <summary>
         /// Validação do preço do produto que deve ser maior que zero.

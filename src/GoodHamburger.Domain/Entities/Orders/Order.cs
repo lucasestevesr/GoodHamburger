@@ -42,7 +42,7 @@ namespace GoodHamburger.Domain.Entities.Orders
         /// <param name="quantity">Quantidade desejada de cada item.</param>
         /// <exception cref="ArgumentNullException">Quando <paramref name="product"/> é nulo.</exception>
         /// <exception cref="DomainException">Quando alguma regra de negócio é violada.</exception>
-        public void AddItemValidation(Product product, int quantity)
+        public void ItemValidation(Product product, int quantity)
         {
             if (product is null) 
                 throw new ArgumentNullException(nameof(product));
@@ -54,20 +54,42 @@ namespace GoodHamburger.Domain.Entities.Orders
             
             if (Items.Any(i => i.Category == product.Category))
                 throw new DomainException($"O pedido só pode conter 1 item da categoria '{product.Category}'.");
+        }
 
+        /// <summary>
+        /// Adiciona um item ao pedido, validando as regras de negócio e atualizando os totais do pedido.
+        /// </summary>
+        /// <param name="product">Produto a ser adicionado.</param>
+        /// <param name="quantity">Quantidade desejada de cada item.</param>
+        public void AddItem(Product product, int quantity)
+        {
+            ItemValidation(product, quantity);
             var orderItem = new OrderItem
             {
                 ProductId = product.Id,
                 Product = product,
 
                 Category = product.Category,
-                ProductPrice = product.Price,
+                ProductPrice = product.Price
             };
 
             orderItem.QuantityValidation(quantity, product);
-            Items.Add(orderItem);
 
+            Items.Add(orderItem);
             CalculateTotalPrice();
+        }
+
+
+        /// <summary>
+        /// Valida se existe um item no pedido para o productId informado.
+        /// </summary>
+        public OrderItem EnsureItemExists(Guid productId)
+        {
+            var item = Items.SingleOrDefault(i => i.ProductId == productId);
+            if (item is null)
+                throw new DomainException("Item não encontrado no pedido.");
+
+            return item;
         }
 
         /// <summary>
@@ -93,11 +115,9 @@ namespace GoodHamburger.Domain.Entities.Orders
         /// </summary>
         /// <param name="productId">Identificador do produto.</param>
         /// <exception cref="DomainException">Quando o item não existe no pedido.</exception>
-        public void RemoveItemValidation(Guid productId)
+        public void RemoveItem(Guid productId)
         {
-            var item = Items.SingleOrDefault(i => i.ProductId == productId);
-            if (item is null)
-                throw new DomainException("Item não encontrado no pedido.");
+            var item = EnsureItemExists(productId);
 
             Items.Remove(item);
             CalculateTotalPrice();
