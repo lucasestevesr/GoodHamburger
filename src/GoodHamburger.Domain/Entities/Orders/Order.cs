@@ -66,6 +66,9 @@ namespace GoodHamburger.Domain.Entities.Orders
             ItemValidation(product, quantity);
             var orderItem = new OrderItem
             {
+                Order = this,
+                OrderId = Id,
+
                 ProductId = product.Id,
                 Product = product,
 
