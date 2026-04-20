@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0. Solution Items", "0. Solution Items", "{838141F7-0651-477F-A5CE-FB7EE15B5381}"
 	ProjectSection(SolutionItems) = preProject
 		docs\design-guidelines.md = docs\design-guidelines.md
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoodHamburger.Api", "src\GoodHamburger.Api\GoodHamburger.Api.csproj", "{95A0EC74-D76F-4FE0-AC8E-D3A3C773AC26}"
