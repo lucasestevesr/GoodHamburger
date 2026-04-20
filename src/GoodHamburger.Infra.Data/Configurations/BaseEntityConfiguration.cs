@@ -13,7 +13,7 @@ namespace GoodHamburger.Infra.Data.Configurations
                 .ValueGeneratedOnAdd()
                 .HasDefaultValueSql("NEWID()");
 
-            builder.Property(entity => entity.CreationTime)
+            builder.Property(entity => entity.CreationDate)
                 .ValueGeneratedOnAdd()
                 .HasDefaultValueSql("TODATETIMEOFFSET(SYSUTCDATETIME(), '+00:00')")
                 .IsRequired();
