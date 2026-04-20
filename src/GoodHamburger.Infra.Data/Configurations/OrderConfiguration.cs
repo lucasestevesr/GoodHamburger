@@ -50,8 +50,6 @@ namespace GoodHamburger.Infra.Data.Configurations
                 .HasForeignKey(item => item.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Navigation(order => order.Items)
-                .UsePropertyAccessMode(PropertyAccessMode.Field);
         }
     }
 }

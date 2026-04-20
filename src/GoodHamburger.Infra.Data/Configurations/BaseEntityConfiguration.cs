@@ -10,8 +10,7 @@ namespace GoodHamburger.Infra.Data.Configurations
             where TEntity : BaseEntity
         {
             builder.Property(entity => entity.Id)
-                .ValueGeneratedOnAdd()
-                .HasDefaultValueSql("NEWID()");
+                .ValueGeneratedNever();
 
             builder.Property(entity => entity.CreationDate)
                 .ValueGeneratedOnAdd()
