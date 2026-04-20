@@ -8,10 +8,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.26" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GoodHamburger.Domain\GoodHamburger.Domain.csproj" />
-    <ProjectReference Include="..\GoodHamburger.Application\GoodHamburger.Application.csproj" />
+    <ProjectReference Include="..\GoodHamburger.Infra.Data\GoodHamburger.Infra.Data.csproj" />
   </ItemGroup>
 </Project>
