@@ -26,7 +26,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoodHamburger.Tests.Unit", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4. Tests Layer", "4. Tests Layer", "{07C15266-49D2-4EAD-ABE1-A187BCC5D8B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoodHamburger.CrossCutting.IoC", "src\GoodHamburger.CrossCutting.IoC\GoodHamburger.CrossCutting.IoC.csproj", "{BD0D23BF-48C2-0DC5-B697-FC729196BCC0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoodHamburger.Infra.CrossCutting.IoC", "src\GoodHamburger.CrossCutting.IoC\GoodHamburger.Infra.CrossCutting.IoC.csproj", "{BD0D23BF-48C2-0DC5-B697-FC729196BCC0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

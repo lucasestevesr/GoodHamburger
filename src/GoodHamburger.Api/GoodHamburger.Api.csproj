@@ -20,6 +20,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GoodHamburger.Application\GoodHamburger.Application.csproj" />
-    <ProjectReference Include="..\GoodHamburger.CrossCutting.IoC\GoodHamburger.CrossCutting.IoC.csproj" />
+    <ProjectReference Include="..\GoodHamburger.CrossCutting.IoC\GoodHamburger.Infra.CrossCutting.IoC.csproj" />
   </ItemGroup>
 </Project>
