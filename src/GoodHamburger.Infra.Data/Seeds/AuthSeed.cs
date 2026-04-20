@@ -15,7 +15,7 @@ namespace GoodHamburger.Infra.Data.Seeds
             new User
             {
                 Id = AdminUserId,
-                CreationTime = SeedDate,
+                CreationDate = SeedDate,
                 Name = "Admin User",
                 Email = "admin@goodhamburger.com",
                 PasswordHash = "S3cr3tP@ssw0rd",
@@ -25,7 +25,7 @@ namespace GoodHamburger.Infra.Data.Seeds
             new User
             {
                 Id = ManagerUserId,
-                CreationTime = SeedDate,
+                CreationDate = SeedDate,
                 Name = "Manager User",
                 Email = "manager@goodhamburger.com",
                 PasswordHash = "S3cr3tP@ssw0rd",
@@ -35,7 +35,7 @@ namespace GoodHamburger.Infra.Data.Seeds
             new User
             {
                 Id = AttendantUserId,
-                CreationTime = SeedDate,
+                CreationDate = SeedDate,
                 Name = "Attendant User",
                 Email = "attendant@goodhamburger.com",
                 PasswordHash = "S3cr3tP@ssw0rd",

@@ -17,7 +17,7 @@ namespace GoodHamburger.Infra.Data.Seeds
             new Product
             {
                 Id = XBurgerId,
-                CreationTime = SeedDate,
+                CreationDate = SeedDate,
                 Name = "X Burger",
                 Price = 5.00m,
                 Category = ProductCategory.Burger,
@@ -26,7 +26,7 @@ namespace GoodHamburger.Infra.Data.Seeds
             new Product
             {
                 Id = XEggId,
-                CreationTime = SeedDate,
+                CreationDate = SeedDate,
                 Name = "X Egg",
                 Price = 4.50m,
                 Category = ProductCategory.Burger,
@@ -35,7 +35,7 @@ namespace GoodHamburger.Infra.Data.Seeds
             new Product
             {
                 Id = XBaconId,
-                CreationTime = SeedDate,
+                CreationDate = SeedDate,
                 Name = "X Bacon",
                 Price = 7.00m,
                 Category = ProductCategory.Burger,
@@ -44,7 +44,7 @@ namespace GoodHamburger.Infra.Data.Seeds
             new Product
             {
                 Id = FriesId,
-                CreationTime = SeedDate,
+                CreationDate = SeedDate,
                 Name = "Batata frita",
                 Price = 2.00m,
                 Category = ProductCategory.Side,
@@ -53,7 +53,7 @@ namespace GoodHamburger.Infra.Data.Seeds
             new Product
             {
                 Id = SodaId,
-                CreationTime = SeedDate,
+                CreationDate = SeedDate,
                 Name = "Refrigerante",
                 Price = 2.50m,
                 Category = ProductCategory.Drink,
