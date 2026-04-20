@@ -1,149 +1,101 @@
-﻿using GoodHamburger.Domain.Entities.Base;
+using GoodHamburger.Domain.Entities.Base;
 using GoodHamburger.Domain.Entities.Products;
 
 namespace GoodHamburger.Domain.Entities.Orders
 {
-    /// <summary>
-    /// Representa uma ordem de compra na hamburgueria.
-    /// </summary>
     public sealed class Order : BaseEntity
     {
+        private readonly List<OrderItem> _items = new();
+
         public long OrderNumber { get; set; }
 
-        /// <summary>
-        /// Soma dos itens do pedido antes do desconto.
-        /// </summary>
         public decimal SubTotal { get; private set; }
 
-        /// <summary>
-        /// Percentual de desconto aplicado ao pedido, calculado com base nas regras de negócio.
-        /// </summary>
         public decimal DiscountRate { get; private set; }
-        
-        /// <summary>
-        /// Preço total do pedido após aplicação de descontos.
-        /// </summary>
+
         public decimal Total { get; private set; }
 
         public Guid CreatedBy { get; set; }
 
         public OrderStatus Status { get; set; }
 
-        public ICollection<OrderItem> Items { get; private set; } = new List<OrderItem>();
+        public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
 
-        /// <summary>
-        /// Regras de negócio para criação de pedido;
-        /// não permite duplicidade do mesmo produto;
-        /// permite no máximo 1 item por categoria (Burger, Side, Drink);
-        /// quantidade deve ser maior que zero;
-        /// produto deve estar ativo.
-        /// </summary>
-        /// <param name="product">Produto a ser adicionado.</param>
-        /// <param name="quantity">Quantidade desejada de cada item.</param>
-        /// <exception cref="ArgumentNullException">Quando <paramref name="product"/> é nulo.</exception>
-        /// <exception cref="DomainException">Quando alguma regra de negócio é violada.</exception>
-        public void ItemValidation(Product product, int quantity)
+        private void ValidateNewItem(Product product, int quantity)
         {
-            if (product is null) 
+            if (product is null)
                 throw new ArgumentNullException(nameof(product));
+
+            if (quantity <= 0)
+                throw new DomainException("Quantidade deve ser maior que zero.");
+
             if (!product.IsActive)
-                throw new DomainException("Produto inativo não pode ser adicionado ao pedido.");           
-           
-            if (Items.Any(i => i.ProductId == product.Id))
+                throw new DomainException("Produto inativo não pode ser adicionado ao pedido.");
+
+            if (_items.Any(i => i.ProductId == product.Id))
                 throw new DomainException("Não pode haver itens duplicados no pedido.");
-            
-            if (Items.Any(i => i.Category == product.Category))
+
+            if (_items.Any(i => i.Category == product.Category))
                 throw new DomainException($"O pedido só pode conter 1 item da categoria '{product.Category}'.");
         }
 
-        /// <summary>
-        /// Adiciona um item ao pedido, validando as regras de negócio e atualizando os totais do pedido.
-        /// </summary>
-        /// <param name="product">Produto a ser adicionado.</param>
-        /// <param name="quantity">Quantidade desejada de cada item.</param>
         public void AddItem(Product product, int quantity)
         {
-            ItemValidation(product, quantity);
+            ValidateNewItem(product, quantity);
+
             var orderItem = new OrderItem
             {
                 Order = this,
                 OrderId = Id,
-
                 ProductId = product.Id,
                 Product = product,
-
                 Category = product.Category,
                 ProductPrice = product.Price
             };
 
-            orderItem.QuantityValidation(quantity, product);
+            orderItem.ValidateQuantity(quantity, product);
 
-            Items.Add(orderItem);
+            _items.Add(orderItem);
             CalculateTotalPrice();
         }
 
-
-        /// <summary>
-        /// Valida se existe um item no pedido para o productId informado.
-        /// </summary>
-        public OrderItem EnsureItemExists(Guid productId)
+        private OrderItem EnsureItemExists(Guid productId)
         {
-            var item = Items.SingleOrDefault(i => i.ProductId == productId);
+            var item = _items.SingleOrDefault(i => i.ProductId == productId);
             if (item is null)
                 throw new DomainException("Item não encontrado no pedido.");
 
             return item;
         }
 
-        /// <summary>
-        /// Atualiza a quantidade de um item existente no pedido.
-        /// </summary>
-        /// <param name="productId">Identificador do produto.</param>
-        /// <param name="quantity">Nova quantidade.</param>
-        /// <exception cref="DomainException">
-        /// Quando o item não existe no pedido ou quando a quantidade é inválida.
-        /// </exception>
         public void UpdateItemQuantity(Guid productId, int quantity)
         {
             var item = EnsureItemExists(productId);
-            item.QuantityValidation(quantity, item.Product);
+
+            item.ValidateQuantity(quantity, item.Product);
             CalculateTotalPrice();
         }
 
-        /// <summary>
-        /// Remove um item do pedido.
-        /// </summary>
-        /// <param name="productId">Identificador do produto.</param>
-        /// <exception cref="DomainException">Quando o item não existe no pedido.</exception>
         public void RemoveItem(Guid productId)
         {
             var item = EnsureItemExists(productId);
 
-            Items.Remove(item);
+            _items.Remove(item);
             CalculateTotalPrice();
         }
 
-        /// <summary>
-        /// Calcula <see cref="SubTotal"/>, <see cref="DiscountRate"/> e <see cref="Total"/>
-        /// com base nos itens atuais do pedido.
-        /// Deve ser chamado após qualquer alteração em <see cref="Items"/>.
-        /// </summary>
         public void CalculateTotalPrice()
         {
-            SubTotal = Items.Sum(i => i.LineTotal);
+            SubTotal = _items.Sum(i => i.LineTotal);
             DiscountRate = CalculateDiscountRate();
             Total = SubTotal * (1 - DiscountRate);
         }
 
-        /// <summary>
-        /// Calcula o percentual de desconto do pedido.
-        /// Caso nenhuma regra aplique, retorna 0.
-        /// </summary>
         private decimal CalculateDiscountRate()
         {
-            var hasBurger = Items.Any(i => i.Category == ProductCategory.Burger);
-            var hasSide = Items.Any(i => i.Category == ProductCategory.Side);
-            var hasDrink = Items.Any(i => i.Category == ProductCategory.Drink);
+            var hasBurger = _items.Any(i => i.Category == ProductCategory.Burger);
+            var hasSide = _items.Any(i => i.Category == ProductCategory.Side);
+            var hasDrink = _items.Any(i => i.Category == ProductCategory.Drink);
 
             if (hasBurger && hasSide && hasDrink) return 0.20m;
             if (hasBurger && hasDrink) return 0.15m;
