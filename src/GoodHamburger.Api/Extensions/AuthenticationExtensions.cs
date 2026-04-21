@@ -11,7 +11,7 @@ namespace GoodHamburger.Api.Extensions
 {
     public static class AuthenticationExtensions
     {
-        public static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddApiAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
             var jwtOptions = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
                 ?? throw new InvalidOperationException("Configuração JWT não encontrada.");

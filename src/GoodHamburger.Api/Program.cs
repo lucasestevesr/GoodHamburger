@@ -15,7 +15,7 @@ builder.Services.AddApiValidation();
 builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddApplicationServices();
 builder.Services.AddAuthServices(builder.Configuration);
-builder.Services.AddAuthentication(builder.Configuration);
+builder.Services.AddApiAuthentication(builder.Configuration);
 builder.Services.AddSwaggerDocumentation();
 
 var app = builder.Build();
