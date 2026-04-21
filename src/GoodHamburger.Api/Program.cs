@@ -1,13 +1,21 @@
+using System.Text.Json.Serialization;
 using GoodHamburger.Api.Extensions;
 using GoodHamburger.Api.Middlewares;
 using GoodHamburger.CrossCutting.IoC;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+
 builder.Services.AddApiValidation();
+builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddApplicationServices();
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddAuthServices(builder.Configuration);
+builder.Services.AddAuthentication(builder.Configuration);
 builder.Services.AddSwaggerDocumentation();
 
 var app = builder.Build();
@@ -20,6 +28,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
