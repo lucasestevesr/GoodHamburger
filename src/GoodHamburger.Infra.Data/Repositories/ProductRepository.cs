@@ -20,5 +20,20 @@ namespace GoodHamburger.Infra.Data.Repositories
                     .ThenBy(product => product.Name)
                 .ToListAsync(ct);
         }
+
+        public async Task AddAsync(Product product, CancellationToken ct)
+        {
+            await context.Products.AddAsync(product, ct);
+        }
+
+        public void Remove(Product product)
+        {
+            context.Products.Remove(product);
+        }
+
+        public async Task SaveChangesAsync(CancellationToken ct)
+        {
+            await context.SaveChangesAsync(ct);
+        }
     }
 }

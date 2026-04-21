@@ -127,9 +127,9 @@ namespace GoodHamburger.Infra.Data.Migrations
                 columns: new[] { "Id", "CreationDate", "Email", "IsActive", "Name", "PasswordHash", "Role" },
                 values: new object[,]
                 {
-                    { new Guid("5a8f84ba-46ed-4d8a-a556-7b9db2494c41"), new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "admin@goodhamburger.com", true, "Admin User", "S3cr3tP@ssw0rd", "Admin" },
-                    { new Guid("5e918c04-1634-41d8-8d7e-96f4059b8163"), new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "attendant@goodhamburger.com", true, "Attendant User", "S3cr3tP@ssw0rd", "Attendant" },
-                    { new Guid("b153c761-3122-4eb8-bb26-297315846b4c"), new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "manager@goodhamburger.com", true, "Manager User", "S3cr3tP@ssw0rd", "Manager" }
+                    { new Guid("5a8f84ba-46ed-4d8a-a556-7b9db2494c41"), new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "admin@goodhamburger.com", true, "Admin User", "AQAAAAIAAYagAAAAEAECAwQFBgcICQoLDA0ODxCc1N01GG8CSt95mAzGrOnxFMB+OMut8DMObIEOtQ4qYg==", "Admin" },
+                    { new Guid("5e918c04-1634-41d8-8d7e-96f4059b8163"), new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "attendant@goodhamburger.com", true, "Attendant User", "AQAAAAIAAYagAAAAECEiIyQlJicoKSorLC0uLzCtdWvuomFlDAvcgACGSCjIhQZs2TMhgaf/oJ1Qm92jQQ==", "Attendant" },
+                    { new Guid("b153c761-3122-4eb8-bb26-297315846b4c"), new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "manager@goodhamburger.com", true, "Manager User", "AQAAAAIAAYagAAAAEBESExQVFhcYGRobHB0eHyD9Metf/8aK26Bucm/TMizq6kR+buFqIKvjtSdORrFiqw==", "Manager" }
                 });
 
             migrationBuilder.CreateIndex(

@@ -74,7 +74,7 @@ namespace GoodHamburger.Infra.Data.Migrations
                             Email = "admin@goodhamburger.com",
                             IsActive = true,
                             Name = "Admin User",
-                            PasswordHash = "S3cr3tP@ssw0rd",
+                            PasswordHash = "AQAAAAIAAYagAAAAEAECAwQFBgcICQoLDA0ODxCc1N01GG8CSt95mAzGrOnxFMB+OMut8DMObIEOtQ4qYg==",
                             Role = "Admin"
                         },
                         new
@@ -84,7 +84,7 @@ namespace GoodHamburger.Infra.Data.Migrations
                             Email = "manager@goodhamburger.com",
                             IsActive = true,
                             Name = "Manager User",
-                            PasswordHash = "S3cr3tP@ssw0rd",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBESExQVFhcYGRobHB0eHyD9Metf/8aK26Bucm/TMizq6kR+buFqIKvjtSdORrFiqw==",
                             Role = "Manager"
                         },
                         new
@@ -94,7 +94,7 @@ namespace GoodHamburger.Infra.Data.Migrations
                             Email = "attendant@goodhamburger.com",
                             IsActive = true,
                             Name = "Attendant User",
-                            PasswordHash = "S3cr3tP@ssw0rd",
+                            PasswordHash = "AQAAAAIAAYagAAAAECEiIyQlJicoKSorLC0uLzCtdWvuomFlDAvcgACGSCjIhQZs2TMhgaf/oJ1Qm92jQQ==",
                             Role = "Attendant"
                         });
                 });

@@ -1,3 +1,4 @@
+using GoodHamburger.Application.Common.Interfaces;
 using GoodHamburger.Application.Orders.Interfaces;
 using GoodHamburger.Application.Orders.Mappings;
 using GoodHamburger.Application.Orders.Requests;
@@ -11,13 +12,19 @@ namespace GoodHamburger.Application.Orders.Services
 {
     public sealed class OrderService(
         IOrderRepository orders,
-        IProductRepository products) : IOrderService
+        IProductRepository products,
+        IUserRepository users,
+        ICurrentUser currentUser) : IOrderService
     {
         public async Task<OrderResponse> CreateAsync(CreateOrderRequest request, CancellationToken ct)
         {
+            ArgumentNullException.ThrowIfNull(request);
+
+            var currentUserId = await GetCurrentUserIdAsync(ct);
+
             var order = new Order
             {
-                CreatedBy = request.CreatedBy,
+                CreatedBy = currentUserId,
                 Status = OrderStatus.Pending,
                 OrderNumber = await orders.GetNextOrderNumberAsync(ct)
             };
@@ -30,6 +37,8 @@ namespace GoodHamburger.Application.Orders.Services
             {
                 foreach (var item in request.Items)
                 {
+                    EnsureNotEmpty(item.ProductId, nameof(item.ProductId), "ProductId inválido.");
+
                     var product = await GetProductAsync(item.ProductId, ct);
                     order.AddItem(product, item.Quantity);
                 }
@@ -53,13 +62,30 @@ namespace GoodHamburger.Application.Orders.Services
 
         public async Task<OrderResponse> GetByIdAsync(Guid orderId, CancellationToken ct)
         {
+            EnsureNotEmpty(orderId, nameof(orderId), "OrderId inválido.");
+
             var order = await GetOrderAsync(orderId, ct);
+            return order.ToResponse();
+        }
+
+        public async Task<OrderResponse> UpdateStatusAsync(Guid orderId, UpdateOrderStatusRequest request, CancellationToken ct)
+        {
+            ArgumentNullException.ThrowIfNull(request);
+            EnsureNotEmpty(orderId, nameof(orderId), "OrderId inválido.");
+
+            var order = await GetOrderAsync(orderId, ct);
+            order.Status = request.Status;
+
+            await orders.SaveChangesAsync(ct);
+
             return order.ToResponse();
         }
 
         public async Task<OrderResponse> AddItemAsync(Guid orderId, AddOrderItemRequest request, CancellationToken ct)
         {
             ArgumentNullException.ThrowIfNull(request);
+            EnsureNotEmpty(orderId, nameof(orderId), "OrderId inválido.");
+            EnsureNotEmpty(request.ProductId, nameof(request.ProductId), "ProductId inválido.");
 
             var order = await GetOrderAsync(orderId, ct);
             var product = await GetProductAsync(request.ProductId, ct);
@@ -78,6 +104,8 @@ namespace GoodHamburger.Application.Orders.Services
             CancellationToken ct)
         {
             ArgumentNullException.ThrowIfNull(request);
+            EnsureNotEmpty(orderId, nameof(orderId), "OrderId inválido.");
+            EnsureNotEmpty(productId, nameof(productId), "ProductId inválido.");
 
             var order = await GetOrderAsync(orderId, ct);
 
@@ -90,6 +118,9 @@ namespace GoodHamburger.Application.Orders.Services
 
         public async Task RemoveItemAsync(Guid orderId, Guid productId, CancellationToken ct)
         {
+            EnsureNotEmpty(orderId, nameof(orderId), "OrderId inválido.");
+            EnsureNotEmpty(productId, nameof(productId), "ProductId inválido.");
+
             var order = await GetOrderAsync(orderId, ct);
 
             order.RemoveItem(productId);
@@ -99,6 +130,8 @@ namespace GoodHamburger.Application.Orders.Services
 
         public async Task DeleteAsync(Guid orderId, CancellationToken ct)
         {
+            EnsureNotEmpty(orderId, nameof(orderId), "OrderId inválido.");
+
             var order = await GetOrderAsync(orderId, ct);
 
             orders.Remove(order);
@@ -121,6 +154,24 @@ namespace GoodHamburger.Application.Orders.Services
                 throw new KeyNotFoundException("Produto não encontrado.");
 
             return product;
+        }
+
+        private async Task<Guid> GetCurrentUserIdAsync(CancellationToken ct)
+        {
+            if (!currentUser.IsAuthenticated || currentUser.UserId is null)
+                throw new UnauthorizedAccessException("Usuário não autenticado.");
+
+            var user = await users.GetByIdAsync(currentUser.UserId.Value, ct);
+            if (user is null || !user.IsActive)
+                throw new UnauthorizedAccessException("Usuário autenticado não encontrado ou inativo.");
+
+            return user.Id;
+        }
+
+        private static void EnsureNotEmpty(Guid value, string parameterName, string message)
+        {
+            if (value == Guid.Empty)
+                throw new ArgumentException(message, parameterName);
         }
     }
 }
