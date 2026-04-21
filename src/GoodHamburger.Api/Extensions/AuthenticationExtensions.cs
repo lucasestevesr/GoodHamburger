@@ -16,6 +16,11 @@ namespace GoodHamburger.Api.Extensions
             var jwtOptions = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
                 ?? throw new InvalidOperationException("Configuração JWT não encontrada.");
 
+            jwtOptions.SecretKey = configuration["JWT_SECRET_KEY"] ?? jwtOptions.SecretKey;
+
+            if (string.IsNullOrWhiteSpace(jwtOptions.SecretKey))
+                throw new InvalidOperationException("JWT SecretKey não configurada.");
+
             services.AddHttpContextAccessor();
             services.AddScoped<ICurrentUser, HttpContextCurrentUser>();
 

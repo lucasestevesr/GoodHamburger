@@ -8,20 +8,20 @@ namespace GoodHamburger.CrossCutting.IoC
     public static class AuthExtensions
     {
         public static IServiceCollection AddAuthServices(
-        this IServiceCollection services,
-        IConfiguration configuration)
+            this IServiceCollection services,
+            IConfiguration configuration)
         {
             services.Configure<JwtOptions>(options =>
-                {
-                    var section = configuration.GetSection(JwtOptions.SectionName);
+            {
+                var section = configuration.GetSection(JwtOptions.SectionName);
 
-                    options.Issuer = section["Issuer"] ?? string.Empty;
-                    options.Audience = section["Audience"] ?? string.Empty;
-                    options.SecretKey = section["SecretKey"] ?? string.Empty;
-                    options.ExpiresInMinutes = int.TryParse(section["ExpiresInMinutes"], out var expiresInMinutes)
-                        ? expiresInMinutes
-                        : 60;
-                });
+                options.Issuer = section["Issuer"] ?? string.Empty;
+                options.Audience = section["Audience"] ?? string.Empty;
+                options.SecretKey = configuration["JWT_SECRET_KEY"] ?? section["SecretKey"] ?? string.Empty;
+                options.ExpiresInMinutes = int.TryParse(section["ExpiresInMinutes"], out var expiresInMinutes)
+                    ? expiresInMinutes
+                    : 60;
+            });
 
             services.AddScoped<IAccessTokenService, JwtAccessTokenService>();
             services.AddScoped<IPasswordHasher, AspNetPasswordHasher>();
