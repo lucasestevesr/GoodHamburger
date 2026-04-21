@@ -1,6 +1,8 @@
+using GoodHamburger.Api.Security;
 using GoodHamburger.Application.Orders.Interfaces;
 using GoodHamburger.Application.Orders.Requests;
 using GoodHamburger.Application.Orders.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GoodHamburger.Api.Controllers
@@ -9,19 +11,17 @@ namespace GoodHamburger.Api.Controllers
     /// Endpoints para gerenciamento de pedidos.
     /// </summary>
     [ApiController]
-    [Route("api/orders")]
+    [Authorize(Policy = AuthorizationPolicies.OrderManagement)]
+    [Route("api/v1/orders")]
     public sealed class OrdersController(IOrderService orderService) : ControllerBase
     {
         /// <summary>
         /// Cria um novo pedido.
         /// </summary>
-        /// <param name="request">Dados necessários para criação do pedido.</param>
-        /// <param name="ct">Token de cancelamento.</param>
-        /// <returns>Pedido criado com seus itens e totais calculados.</returns>
         [HttpPost]
         [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Create([FromBody] CreateOrderRequest request, CancellationToken ct)
         {
             var createdOrder = await orderService.CreateAsync(request, ct);
@@ -32,11 +32,8 @@ namespace GoodHamburger.Api.Controllers
         /// <summary>
         /// Lista os pedidos cadastrados.
         /// </summary>
-        /// <param name="ct">Token de cancelamento.</param>
-        /// <returns>Lista de pedidos.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(IReadOnlyList<OrderSummaryResponse>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> List(CancellationToken ct)
         {
             var orderList = await orderService.ListAsync(ct);
@@ -46,14 +43,9 @@ namespace GoodHamburger.Api.Controllers
         /// <summary>
         /// Obtém um pedido pelo identificador.
         /// </summary>
-        /// <param name="orderId">Identificador do pedido.</param>
-        /// <param name="ct">Token de cancelamento.</param>
-        /// <returns>Detalhes do pedido.</returns>
         [HttpGet("{orderId:guid}")]
         [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetById(Guid orderId, CancellationToken ct)
         {
             var order = await orderService.GetByIdAsync(orderId, ct);
@@ -63,34 +55,36 @@ namespace GoodHamburger.Api.Controllers
         /// <summary>
         /// Adiciona um item a um pedido existente.
         /// </summary>
-        /// <param name="orderId">Identificador do pedido.</param>
-        /// <param name="request">Dados do item a ser adicionado.</param>
-        /// <param name="ct">Token de cancelamento.</param>
-        /// <returns>Pedido atualizado.</returns>
         [HttpPost("{orderId:guid}/items")]
         [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddItem(Guid orderId, [FromBody] AddOrderItemRequest request, CancellationToken ct)
         {
             var updatedOrder = await orderService.AddItemAsync(orderId, request, ct);
+            return Ok(updatedOrder);
+        }
+        
+        /// <summary>
+        /// Atualiza o status de um pedido.
+        /// </summary>
+        [HttpPatch("{orderId:guid}/status")]
+        [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateStatus(Guid orderId, [FromBody] UpdateOrderStatusRequest request, CancellationToken ct)
+        {
+            var updatedOrder = await orderService.UpdateStatusAsync(orderId, request, ct);
             return Ok(updatedOrder);
         }
 
         /// <summary>
         /// Atualiza a quantidade de um item do pedido.
         /// </summary>
-        /// <param name="orderId">Identificador do pedido.</param>
-        /// <param name="productId">Identificador do produto.</param>
-        /// <param name="request">Nova quantidade do item.</param>
-        /// <param name="ct">Token de cancelamento.</param>
-        /// <returns>Pedido atualizado.</returns>
         [HttpPut("{orderId:guid}/items/{productId:guid}")]
         [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateItemQuantity(
             Guid orderId,
             Guid productId,
@@ -104,14 +98,9 @@ namespace GoodHamburger.Api.Controllers
         /// <summary>
         /// Remove um item de um pedido.
         /// </summary>
-        /// <param name="orderId">Identificador do pedido.</param>
-        /// <param name="productId">Identificador do produto.</param>
-        /// <param name="ct">Token de cancelamento.</param>
         [HttpDelete("{orderId:guid}/items/{productId:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> RemoveItem(Guid orderId, Guid productId, CancellationToken ct)
         {
             await orderService.RemoveItemAsync(orderId, productId, ct);
@@ -121,13 +110,9 @@ namespace GoodHamburger.Api.Controllers
         /// <summary>
         /// Remove um pedido pelo identificador.
         /// </summary>
-        /// <param name="orderId">Identificador do pedido.</param>
-        /// <param name="ct">Token de cancelamento.</param>
         [HttpDelete("{orderId:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Delete(Guid orderId, CancellationToken ct)
         {
             await orderService.DeleteAsync(orderId, ct);
