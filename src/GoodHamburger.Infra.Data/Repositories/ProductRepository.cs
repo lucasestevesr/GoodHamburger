@@ -16,7 +16,8 @@ namespace GoodHamburger.Infra.Data.Repositories
         {
             return await context.Products
                 .AsNoTracking()
-                .OrderBy(product => product.Name)
+                .OrderBy(product => product.Category)
+                    .ThenBy(product => product.Name)
                 .ToListAsync(ct);
         }
     }

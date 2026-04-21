@@ -11,8 +11,7 @@ namespace GoodHamburger.Application.Orders.Services
 {
     public sealed class OrderService(
         IOrderRepository orders,
-        IProductRepository products,
-        IUserRepository users) : IOrderService
+        IProductRepository products) : IOrderService
     {
         public async Task<OrderResponse> CreateAsync(CreateOrderRequest request, CancellationToken ct)
         {
