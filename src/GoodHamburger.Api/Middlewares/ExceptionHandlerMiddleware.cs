@@ -1,3 +1,4 @@
+using GoodHamburger.Application.Common.Exceptions;
 using GoodHamburger.Domain.Entities.Base;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,6 +31,12 @@ namespace GoodHamburger.Api.Middlewares
                 DomainException => (
                     StatusCodes.Status400BadRequest,
                     "Regra de negócio inválida."),
+                UnauthorizedAccessException => (
+                    StatusCodes.Status401Unauthorized,
+                    "Acesso não autorizado."),
+                ForbiddenAccessException => (
+                    StatusCodes.Status403Forbidden,
+                    "Acesso negado."),
                 KeyNotFoundException => (
                     StatusCodes.Status404NotFound,
                     "Recurso não encontrado."),
