@@ -1,3 +1,4 @@
+using GoodHamburger.Application.Auth.Interfaces;
 using GoodHamburger.Application.Orders.Interfaces;
 using GoodHamburger.Application.Products.Interfaces;
 using GoodHamburger.Application.Users.Interfaces;
@@ -9,14 +10,14 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace GoodHamburger.CrossCutting.IoC
 {
-    public static class InfraExtensions
+    public static class DbContextExtensions
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("Default");
 
             if (string.IsNullOrWhiteSpace(connectionString))
-                throw new InvalidOperationException("Connection string 'Default' não configurada.");
+                throw new InvalidOperationException("Connection string 'Default' não configurada.");            
 
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(
