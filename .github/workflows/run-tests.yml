@@ -1,0 +1,55 @@
+name: Run tests (with coverage)
+
+on:
+  workflow_call:
+    inputs:
+      coverage_threshold:
+        required: false
+        type: number
+        default: 80
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+      NUGET_XMLDOC_MODE: skip
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+          cache: true
+          cache-dependency-path: |
+            src/**/packages.lock.json
+            tests/**/packages.lock.json
+
+      - name: Restore (locked)
+        run: dotnet restore GoodHamburger.sln --locked-mode --verbosity minimal
+
+      - name: Build
+        run: dotnet build GoodHamburger.sln --configuration Release --no-restore --verbosity minimal
+
+      - name: Test with coverage
+        run: dotnet test GoodHamburger.sln --configuration Release --no-build --verbosity minimal --collect:"XPlat Code Coverage" --results-directory ./TestResults --logger "trx;LogFileName=test-results.trx"
+
+      - name: Install reportgenerator
+        run: dotnet tool install dotnet-reportgenerator-globaltool --tool-path ./.tools
+
+      - name: Generate coverage summary (Domain only)
+        run: ./.tools/reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" -targetdir:"TestResults/CoverageReport" -reporttypes:"TextSummary" -assemblyfilters:"+GoodHamburger.Domain*"
+
+      - name: Enforce Domain coverage threshold
+        run: |
+          echo "---- Coverage summary ----"
+          cat TestResults/CoverageReport/Summary.txt
+          LINE=$(grep -i "Line coverage" TestResults/CoverageReport/Summary.txt | head -n 1 | sed -E 's/.*Line coverage: ([0-9.]+)%.*/\1/')
+          echo "Domain Line coverage = $LINE%"
+          THRESHOLD=${{ inputs.coverage_threshold }}
+          echo "Required threshold = $THRESHOLD%"
+          awk "BEGIN {exit !($LINE >= $THRESHOLD)}"
