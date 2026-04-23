@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoodHamburger.Infra.CrossCu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoodHamburger.Infra.Identity", "src\GoodHamburger.Infra.Identity\GoodHamburger.Infra.Identity.csproj", "{8C61ED1D-B696-46CC-95B7-F9228103E192}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoodHamburger.Web", "src\GoodHamburger.Web\GoodHamburger.Web.csproj", "{6FE2922E-D996-4769-A32E-480F51ABD61D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,6 +67,10 @@ Global
 		{8C61ED1D-B696-46CC-95B7-F9228103E192}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C61ED1D-B696-46CC-95B7-F9228103E192}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C61ED1D-B696-46CC-95B7-F9228103E192}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FE2922E-D996-4769-A32E-480F51ABD61D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FE2922E-D996-4769-A32E-480F51ABD61D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FE2922E-D996-4769-A32E-480F51ABD61D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FE2922E-D996-4769-A32E-480F51ABD61D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -77,6 +83,7 @@ Global
 		{9DE6E7BA-D9A6-4038-AB82-00DA55028DDB} = {07C15266-49D2-4EAD-ABE1-A187BCC5D8B0}
 		{BD0D23BF-48C2-0DC5-B697-FC729196BCC0} = {1A0D1007-234A-4244-A05D-8F2CC7ACB3C9}
 		{8C61ED1D-B696-46CC-95B7-F9228103E192} = {1A0D1007-234A-4244-A05D-8F2CC7ACB3C9}
+		{6FE2922E-D996-4769-A32E-480F51ABD61D} = {05FD17AA-D7EB-4593-9470-BBA90277E3DE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B5EDEF62-5D11-4CF0-9242-F63B927E19FA}
