@@ -1,4 +1,4 @@
-name: Run tests (with coverage)
+name: tests
 
 on:
   workflow_call:
@@ -71,6 +71,18 @@ jobs:
           Add-Content $env:GITHUB_STEP_SUMMARY "| --- | ---: | ---: | --- |"
           Add-Content $env:GITHUB_STEP_SUMMARY "| Line coverage | $lineCoverage% | $threshold% | $status |"
           Add-Content $env:GITHUB_STEP_SUMMARY "| Branch coverage | $branchCoverage% | Informational | - |"
+          Add-Content $env:GITHUB_STEP_SUMMARY ""
+          Add-Content $env:GITHUB_STEP_SUMMARY "### Domain"
+          Add-Content $env:GITHUB_STEP_SUMMARY ""
+          Add-Content $env:GITHUB_STEP_SUMMARY "| Class | Line | Branch |"
+          Add-Content $env:GITHUB_STEP_SUMMARY "| --- | ---: | ---: |"
+
+          foreach ($class in $domainPackage.classes.class | Sort-Object name) {
+            $classLineCoverage = [math]::Round(([double] $class.'line-rate') * 100, 2)
+            $classBranchCoverage = [math]::Round(([double] $class.'branch-rate') * 100, 2)
+            $className = $class.name -replace "^GoodHamburger\.Domain\.", ""
+            Add-Content $env:GITHUB_STEP_SUMMARY "| ``$className`` | $classLineCoverage% | $classBranchCoverage% |"
+          }
 
           if ($lineCoverage -lt $threshold) {
             throw "GoodHamburger.Domain line coverage is $lineCoverage%, below the required $threshold%."
