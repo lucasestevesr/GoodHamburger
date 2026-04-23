@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using GoodHamburger.Domain.Entities.Auth;
 
 namespace GoodHamburger.Application.Users.Requests
 {
@@ -15,11 +14,14 @@ namespace GoodHamburger.Application.Users.Requests
         public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "O perfil é obrigatório.")]
-        public UserRole Role { get; set; }
+        public string Role { get; set; } = string.Empty;
 
         public bool IsActive { get; set; }
 
-        [MinLength(6, ErrorMessage = "A senha deve ter pelo menos 6 caracteres.")]
+        [MinLength(7, ErrorMessage = "A senha deve ter pelo menos 7 caracteres.")]
+        [RegularExpression(
+            @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).+$",
+            ErrorMessage = "A senha deve conter letra minúscula, letra maiúscula, número e caractere especial.")]
         public string? Password { get; set; }
     }
 }

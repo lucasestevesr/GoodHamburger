@@ -1,4 +1,3 @@
-using GoodHamburger.Domain.Entities.Auth;
 using GoodHamburger.Domain.Entities.Orders;
 using GoodHamburger.Domain.Entities.Products;
 using Microsoft.EntityFrameworkCore;
@@ -7,8 +6,6 @@ namespace GoodHamburger.Infra.Data
 {
     public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
     {
-        public DbSet<User> Users { get; set; }
-
         public DbSet<Product> Products { get; set; }
 
         public DbSet<Order> Orders { get; set; }

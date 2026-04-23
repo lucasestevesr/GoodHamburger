@@ -2,27 +2,33 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using GoodHamburger.Application.Auth.Interfaces;
-using GoodHamburger.Domain.Entities.Auth;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace GoodHamburger.Infra.Data.Security
+namespace GoodHamburger.Infra.Identity.Security
 {
     public sealed class JwtAccessTokenService(IOptions<JwtOptions> options) : IAccessTokenService
     {
         private readonly JwtOptions jwtOptions = options.Value;
 
-        public string GenerateToken(User user)
+        public string GenerateAccessToken(Guid userId, string? email, IEnumerable<string> roles)
         {
-            var claims = new[]
+            var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role.ToString()),
-                new Claim(JwtRegisteredClaimNames.UniqueName, user.Name)
+                new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, userId.ToString())
             };
+
+            if (!string.IsNullOrWhiteSpace(email))
+            {
+                claims.Add(new Claim(JwtRegisteredClaimNames.Email, email));
+                claims.Add(new Claim(ClaimTypes.Email, email));
+            }
+
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

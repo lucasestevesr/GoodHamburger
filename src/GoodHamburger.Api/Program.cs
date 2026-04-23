@@ -1,7 +1,9 @@
+using System.Globalization;
 using System.Text.Json.Serialization;
 using GoodHamburger.Api.Extensions;
 using GoodHamburger.Api.Middlewares;
 using GoodHamburger.CrossCutting.IoC;
+using Microsoft.AspNetCore.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +22,26 @@ builder.Services.AddSwaggerDocumentation();
 
 var app = builder.Build();
 
+var apiCulture = CultureInfo.InvariantCulture;
+var apiMessageCulture = CultureInfo.GetCultureInfo("pt-BR");
+
+CultureInfo.DefaultThreadCurrentCulture = apiCulture;
+CultureInfo.DefaultThreadCurrentUICulture = apiMessageCulture;
+
+if (app.Environment.IsDevelopment())
+{
+    await app.Services.ApplyDevelopmentMigrationsAndSeedAsync();
+}
+
 app.UseMiddleware<ExceptionHandlerMiddleware>();
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture(apiCulture, apiMessageCulture),
+    SupportedCultures = [apiCulture],
+    SupportedUICultures = [apiMessageCulture],
+    FallBackToParentCultures = false,
+    FallBackToParentUICultures = true
+});
 
 if (app.Environment.IsDevelopment())
 {
