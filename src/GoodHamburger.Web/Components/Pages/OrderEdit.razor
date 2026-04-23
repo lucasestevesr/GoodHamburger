@@ -1,0 +1,141 @@
+@page "/orders/{OrderId:guid}"
+@inject OrdersApiClient OrdersApi
+@inject ProductsApiClient ProductsApi
+@inject AuthSession Auth
+@inject NavigationManager Navigation
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<MudStack Spacing="4">
+    <PageHeader Eyebrow="@PageTitle"
+                Subtitle="Atualize o status do pedido.
+                Ajuste os itens (é permitido apenas UM por categoria; caso todas as categorias já estejam preenchidas, não será possível adicionar novos itens).
+                Acompanhe o total do pedido, considerando as regras de desconto.">
+        <Meta>
+            @if (_selectedOrder is not null)
+            {
+                <MudChip T="string" Variant="Variant.Outlined" Color="@AdminVisuals.GetOrderStatusColor(_selectedOrder.Status)" Size="Size.Small">
+                    @AdminVisuals.TranslateOrderStatus(_selectedOrder.Status)
+                </MudChip>
+            }
+        </Meta>
+        <Actions>
+            <MudButton Href="/orders" Variant="Variant.Outlined" Color="Color.Default" StartIcon="@Icons.Material.Filled.ArrowBack">
+                Voltar
+            </MudButton>
+        </Actions>
+    </PageHeader>
+
+    @if (!Auth.CanManageOrders)
+    {
+        <EmptyState Icon="@Icons.Material.Filled.Block"
+                    Title="Acesso restrito"
+                    Description="Seu perfil nao tem permissao para editar pedidos."
+                    AccentColor="Color.Error" />
+    }
+    else if (_loadingData)
+    {
+        <SectionCard Title="Carregando pedido">
+            <MudStack Spacing="2">
+                <MudSkeleton Height="44px" />
+                <MudSkeleton Height="140px" />
+                <MudSkeleton Height="110px" />
+            </MudStack>
+        </SectionCard>
+    }
+    else if (_selectedOrder is not null)
+    {
+        <MudGrid Class="module-grid">
+            <MudItem xs="12" lg="8">
+                <SectionCard Title="Itens do pedido">
+                    <MudTable Items="_selectedOrder.Items" Hover="true" Breakpoint="Breakpoint.Sm">
+                        <HeaderContent>
+                            <MudTh>Produto</MudTh>
+                            <MudTh>Categoria</MudTh>
+                            <MudTh>Quantidade</MudTh>
+                            <MudTh>Preço Unitário</MudTh>
+                            <MudTh>Total</MudTh>
+                            <MudTh>Ações</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Produto">@context.ProductName</MudTd>
+                            <MudTd DataLabel="Categoria">
+                                <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@AdminVisuals.GetCategoryColor(context.Category)">
+                                    @AdminVisuals.TranslateCategory(context.Category)
+                                </MudChip>
+                            </MudTd>
+                            <MudTd DataLabel="Quantidade">
+                                <MudNumericField Value="context.Quantity"
+                                                 ValueChanged="@((int value) => UpdateItemQuantityAsync(context.ProductId, value))"
+                                                 Min="1"
+                                                 Style="max-width: 110px" />
+                            </MudTd>
+                            <MudTd DataLabel="Preço Unitário">@context.ProductPrice.ToString("C")</MudTd>
+                            <MudTd DataLabel="Total">@context.LineTotal.ToString("C")</MudTd>
+                            <MudTd DataLabel="Ações">
+                                <MudIconButton Icon="@Icons.Material.Filled.DeleteOutline" Color="Color.Error" OnClick="@(() => RemoveItemAsync(context.ProductId, context.ProductName))" />
+                            </MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </SectionCard>
+            </MudItem>
+
+            <MudItem xs="12" lg="4">
+                <MudStack Spacing="3">
+                    <SectionCard Title="Resumo do pedido">
+                        <MudSelect T="OrderStatus"
+                                   Value="ParseStatus(_selectedOrder.Status)"
+                                   ValueChanged="UpdateStatusAsync"
+                                   Label="Status"
+                                   Class="mb-4">
+                            <MudSelectItem T="OrderStatus" Value="OrderStatus.Pending">Pendente</MudSelectItem>
+                            <MudSelectItem T="OrderStatus" Value="OrderStatus.Processing">Em preparo</MudSelectItem>
+                            <MudSelectItem T="OrderStatus" Value="OrderStatus.Completed">Concluido</MudSelectItem>
+                            <MudSelectItem T="OrderStatus" Value="OrderStatus.Cancelled">Cancelado</MudSelectItem>
+                        </MudSelect>
+
+                        <div class="summary-list">
+                            <div class="summary-list__row">
+                                <MudText Typo="Typo.body2">Subtotal</MudText>
+                                <MudText Typo="Typo.body2">@_selectedOrder.SubTotal.ToString("C")</MudText>
+                            </div>
+                            <div class="summary-list__row">
+                                <MudText Typo="Typo.body2">Desconto</MudText>
+                                <MudText Typo="Typo.body2">@_selectedOrder.DiscountRate.ToString("P0")</MudText>
+                            </div>
+                            <div class="summary-list__row">
+                                <MudText Typo="Typo.subtitle2">Total</MudText>
+                                <MudText Typo="Typo.subtitle2">@_selectedOrder.Total.ToString("C")</MudText>
+                            </div>
+                        </div>
+                    </SectionCard>
+
+                    <SectionCard Title="Adicionar item">
+                        @if (AvailableProducts.Any())
+                        {
+                            <MudStack Spacing="2">
+                                <MudSelect T="Guid" @bind-Value="_newItemProductId" Label="Produto">
+                                    @foreach (var product in AvailableProducts)
+                                    {
+                                        <MudSelectItem T="Guid" Value="@product.Id">@($"{product.Name} - {AdminVisuals.TranslateCategory(product.Category)}")</MudSelectItem>
+                                    }
+                                </MudSelect>
+                                <MudNumericField @bind-Value="_newItemQuantity" Label="Quantidade" Min="1" />
+                                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="AddItemAsync" StartIcon="@Icons.Material.Filled.Add">
+                                    Adicionar
+                                </MudButton>
+                            </MudStack>
+                        }
+                        else
+                        {
+                            <EmptyState Icon="@Icons.Material.Filled.CheckCircle"
+                                        Title="Pedido completo"
+                                        Description="Todas as categorias disponíveis já foram utilizadas."
+                                        AccentColor="Color.Success" />
+                        }
+                    </SectionCard>
+                </MudStack>
+            </MudItem>
+        </MudGrid>
+    }
+</MudStack>

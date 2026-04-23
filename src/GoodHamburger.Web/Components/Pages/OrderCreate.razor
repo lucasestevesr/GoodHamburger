@@ -1,0 +1,122 @@
+@page "/orders/new"
+@inject OrdersApiClient OrdersApi
+@inject ProductsApiClient ProductsApi
+@inject AuthSession Auth
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<MudStack Spacing="4">
+    <PageHeader Eyebrow="Novo Pedido"
+                Subtitle="Selecione os itens por categoria e confirme o pedido.
+                Só é permitido UM pedido por categoria.
+                Não é permitido repetir itens da mesma categoria, porém, pode pedir mais quantidade desse mesmo produto.">
+        <Actions>
+            <MudButton Href="/orders" Variant="Variant.Outlined" Color="Color.Default" StartIcon="@Icons.Material.Filled.ArrowBack">
+                Voltar
+            </MudButton>
+        </Actions>
+    </PageHeader>
+
+    @if (!Auth.CanManageOrders)
+    {
+        <EmptyState Icon="@Icons.Material.Filled.Block"
+                    Title="Acesso restrito"
+                    Description="Seu perfil não tem permissão para criar pedidos."
+                    AccentColor="Color.Error" />
+    }
+    else if (_loadingProducts)
+    {
+        <SectionCard Title="Carregando itens">
+            <MudStack Spacing="2">
+                <MudSkeleton Height="110px" />
+                <MudSkeleton Height="110px" />
+                <MudSkeleton Height="110px" />
+            </MudStack>
+        </SectionCard>
+    }
+    else
+    {
+        <MudGrid Class="module-grid">
+            <MudItem xs="12" lg="8">
+                <SectionCard Title="Itens do pedido">
+                    <MudGrid Class="module-grid">
+                        <MudItem xs="12" md="4">
+                            <MudPaper Class="field-panel" Elevation="0">
+                                <MudText Typo="Typo.subtitle1">Sanduíche</MudText>
+                                <MudSelect T="Guid?" @bind-Value="_burgerId" Label="Item" Clearable="true" Class="mt-3">
+                                    @foreach (var product in ActiveProducts("Burger"))
+                                    {
+                                        <MudSelectItem T="Guid?" Value="@product.Id">@($"{product.Name} - {product.Price:C}")</MudSelectItem>
+                                    }
+                                </MudSelect>
+                                <MudNumericField @bind-Value="_burgerQuantity" Label="Quantidade" Min="1" Disabled="@(!_burgerId.HasValue)" Class="mt-3" />
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="12" md="4">
+                            <MudPaper Class="field-panel" Elevation="0">
+                                <MudText Typo="Typo.subtitle1">Acompanhamento</MudText>
+                                <MudSelect T="Guid?" @bind-Value="_sideId" Label="Item" Clearable="true" Class="mt-3">
+                                    @foreach (var product in ActiveProducts("Side"))
+                                    {
+                                        <MudSelectItem T="Guid?" Value="@product.Id">@($"{product.Name} - {product.Price:C}")</MudSelectItem>
+                                    }
+                                </MudSelect>
+                                <MudNumericField @bind-Value="_sideQuantity" Label="Quantidade" Min="1" Disabled="@(!_sideId.HasValue)" Class="mt-3" />
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="12" md="4">
+                            <MudPaper Class="field-panel" Elevation="0">
+                                <MudText Typo="Typo.subtitle1">Bebida</MudText>
+                                <MudSelect T="Guid?" @bind-Value="_drinkId" Label="Item" Clearable="true" Class="mt-3">
+                                    @foreach (var product in ActiveProducts("Drink"))
+                                    {
+                                        <MudSelectItem T="Guid?" Value="@product.Id">@($"{product.Name} - {product.Price:C}")</MudSelectItem>
+                                    }
+                                </MudSelect>
+                                <MudNumericField @bind-Value="_drinkQuantity" Label="Quantidade" Min="1" Disabled="@(!_drinkId.HasValue)" Class="mt-3" />
+                            </MudPaper>
+                        </MudItem>
+                    </MudGrid>
+
+                    <MudStack Row="true" Spacing="2" Class="mt-4">
+                        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="CreateOrderAsync" Disabled="@(_loading || !HasSelectedItems)" StartIcon="@Icons.Material.Filled.Save">
+                            Criar pedido
+                        </MudButton>
+                        <MudButton Variant="Variant.Outlined" Href="/orders">Cancelar</MudButton>
+                    </MudStack>
+                </SectionCard>
+            </MudItem>
+
+            <MudItem xs="12" lg="4">
+                <SectionCard Title="Resumo">
+                    @if (SelectedItems.Any())
+                    {
+                        <MudStack Spacing="2">
+                            @foreach (var item in SelectedItems)
+                            {
+                                <div class="summary-list__row">
+                                    <MudStack Spacing="0">
+                                        <MudText Typo="Typo.subtitle2">@item.Name</MudText>
+                                        <MudText Typo="Typo.caption" Class="muted-text">@item.CategoryLabel x @item.Quantity</MudText>
+                                    </MudStack>
+                                    <MudText Typo="Typo.subtitle2">@item.LineTotal.ToString("C")</MudText>
+                                </div>
+                            }
+                            <div class="summary-list__row">
+                                <MudText Typo="Typo.subtitle2">Total</MudText>
+                                <MudText Typo="Typo.subtitle2">@EstimatedTotal.ToString("C")</MudText>
+                            </div>
+                        </MudStack>
+                    }
+                    else
+                    {
+                        <EmptyState Icon="@Icons.Material.Filled.AddShoppingCart"
+                                    Title="Selecione os itens"
+                                    Description="O resumo aparece aqui conforme voce monta o pedido."
+                                    AccentColor="Color.Info" />
+                    }
+                </SectionCard>
+            </MudItem>
+        </MudGrid>
+    }
+</MudStack>

@@ -1,0 +1,51 @@
+@page "/"
+@inject AuthSession Auth
+@inject NavigationManager Navigation
+
+<MudStack Spacing="4">
+    <PageHeader Eyebrow="PAINEL"
+                Title="Sistema de Gestão GoodHamburger"
+                Subtitle="Acesse pedidos, cardápio e usuários.">
+        <Actions>
+            @if (Auth.CanManageOrders)
+            {
+                <MudButton Href="/orders/new" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.AddShoppingCart">
+                    Novo pedido
+                </MudButton>
+            }
+            <MudButton Href="/products" Variant="Variant.Outlined" Color="Color.Default" StartIcon="@Icons.Material.Filled.RestaurantMenu">
+                Ver cardápio
+            </MudButton>
+        </Actions>
+    </PageHeader>
+
+    <MudGrid Class="module-grid">
+        <MudItem xs="12" md="4">
+            <MudPaper Class="module-card" Elevation="0">
+                <MudText Typo="Typo.h6">Pedidos</MudText>
+                <MudText Typo="Typo.body2" Class="mt-1 muted-text">Controle operacional de pedidos e acompanhamento de status.</MudText>
+                <MudButton Href="/orders" Variant="Variant.Filled" Color="Color.Primary" Disabled="!Auth.CanManageOrders" Class="mt-4">
+                    Abrir
+                </MudButton>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudPaper Class="module-card" Elevation="0">
+                <MudText Typo="Typo.h6">Cardápio</MudText>
+                <MudText Typo="Typo.body2" Class="mt-1 muted-text">Gestão de itens, categorias, preço e disponibilidade.</MudText>
+                <MudButton Href="/products" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">
+                    Abrir
+                </MudButton>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudPaper Class="module-card" Elevation="0">
+                <MudText Typo="Typo.h6">Usuários</MudText>
+                <MudText Typo="Typo.body2" Class="mt-1 muted-text">Administração de acessos, perfis e status da equipe.</MudText>
+                <MudButton Href="/users" Variant="Variant.Filled" Color="Color.Primary" Disabled="!Auth.CanManageAttendants" Class="mt-4">
+                    Abrir
+                </MudButton>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudStack>

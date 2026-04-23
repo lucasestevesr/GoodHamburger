@@ -1,0 +1,39 @@
+@inject GoodHamburger.Web.Security.AuthSession Auth
+@inject GoodHamburger.Web.Security.AuthSessionStorage AuthStorage
+
+@if (!Auth.IsInitialized)
+{
+    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#11151b;color:#f5f7fa;">
+        <div style="text-align:center;">
+            <MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Large" />
+            <div style="margin-top:16px;">Carregando sessao...</div>
+        </div>
+    </div>
+}
+else
+{
+    <Router AppAssembly="typeof(Program).Assembly">
+        <Found Context="routeData">
+            <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+            <FocusOnNavigate RouteData="routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <LayoutView Layout="typeof(Layout.MainLayout)">
+                <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-8">
+                    <MudAlert Severity="Severity.Warning">Página não encontrada.</MudAlert>
+                </MudContainer>
+            </LayoutView>
+        </NotFound>
+    </Router>
+}
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        await Auth.InitializeAsync(AuthStorage);
+        await InvokeAsync(StateHasChanged);
+    }
+}

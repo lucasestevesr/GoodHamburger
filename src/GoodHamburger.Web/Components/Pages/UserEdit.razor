@@ -1,0 +1,70 @@
+@page "/users/{UserId:guid}/edit"
+@inject UsersApiClient UsersApi
+@inject AuthSession Auth
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<MudStack Spacing="4">
+    <PageHeader Eyebrow="Editar usuário"
+                Subtitle="Atualize informações da conta, perfil e status de acesso.">
+        <Actions>
+            <MudButton Href="/users" Variant="Variant.Outlined" Color="Color.Default" StartIcon="@Icons.Material.Filled.ArrowBack">
+                Voltar
+            </MudButton>
+        </Actions>
+    </PageHeader>
+
+    @if (!Auth.CanManageUsers)
+    {
+        <EmptyState Icon="@Icons.Material.Filled.Block"
+                    Title="Edição restrita"
+                    Description="A administração completa de usuários fica disponível apenas para administradores."
+                    AccentColor="Color.Error" />
+    }
+    else if (_loadingData)
+    {
+        <SectionCard Title="Carregando usuário">
+            <MudStack Spacing="2">
+                <MudSkeleton Height="44px" />
+                <MudSkeleton Height="44px" />
+                <MudSkeleton Height="44px" />
+            </MudStack>
+        </SectionCard>
+    }
+    else
+    {
+        <SectionCard Title="Dados da conta">
+            <MudForm @ref="_form">
+                <MudGrid Class="form-grid">
+                    <MudItem xs="12" md="6">
+                        <MudTextField @bind-Value="_formModel.Name" Label="Nome completo" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudTextField @bind-Value="_formModel.Email" Label="E-mail" InputType="InputType.Email" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudTextField @bind-Value="_formModel.Password" Label="Nova senha (opcional)" InputType="InputType.Password" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudSelect T="string" @bind-Value="_formModel.Role" Label="Perfil">
+                            @foreach (var role in IdentityRoles.All)
+                            {
+                                <MudSelectItem T="string" Value="@role">@AdminVisuals.TranslateRole(role)</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudSwitch T="bool" @bind-Value="_formModel.IsActive" Label="Conta ativa" Color="Color.Primary" />
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+
+            <MudStack Row="true" Spacing="2" Class="mt-4">
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="SaveAsync" Disabled="_saving" StartIcon="@Icons.Material.Filled.Save">
+                    Salvar
+                </MudButton>
+                <MudButton Variant="Variant.Outlined" Href="/users">Cancelar</MudButton>
+            </MudStack>
+        </SectionCard>
+    }
+</MudStack>
