@@ -1,4 +1,4 @@
-﻿namespace GoodHamburger.Application
+namespace GoodHamburger.Application
 {
     public sealed class ApplicationAssemblyReference;
 }

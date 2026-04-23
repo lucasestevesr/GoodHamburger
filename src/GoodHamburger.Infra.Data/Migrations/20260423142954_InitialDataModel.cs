@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -17,6 +17,25 @@ namespace GoodHamburger.Infra.Data.Migrations
                 name: "GoodHamburger");
 
             migrationBuilder.CreateTable(
+                name: "Orders",
+                schema: "GoodHamburger",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OrderNumber = table.Column<long>(type: "bigint", nullable: false),
+                    SubTotal = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    DiscountRate = table.Column<decimal>(type: "decimal(5,4)", precision: 5, scale: 4, nullable: false),
+                    Total = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    CreationDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "TODATETIMEOFFSET(SYSUTCDATETIME(), '+00:00')")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Products",
                 schema: "GoodHamburger",
                 columns: table => new
@@ -32,50 +51,6 @@ namespace GoodHamburger.Infra.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Products", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Users",
-                schema: "GoodHamburger",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    Role = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    CreationDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "TODATETIMEOFFSET(SYSUTCDATETIME(), '+00:00')")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Orders",
-                schema: "GoodHamburger",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrderNumber = table.Column<long>(type: "bigint", nullable: false),
-                    SubTotal = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    DiscountRate = table.Column<decimal>(type: "decimal(5,2)", precision: 5, scale: 2, nullable: false),
-                    Total = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    CreationDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "TODATETIMEOFFSET(SYSUTCDATETIME(), '+00:00')")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Orders", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Orders_Users_CreatedBy",
-                        column: x => x.CreatedBy,
-                        principalSchema: "GoodHamburger",
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -121,17 +96,6 @@ namespace GoodHamburger.Infra.Data.Migrations
                     { new Guid("fdb1f206-ed55-4467-9295-e4a88df7f8bf"), "Burger", new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), null, true, "X Egg", 4.50m }
                 });
 
-            migrationBuilder.InsertData(
-                schema: "GoodHamburger",
-                table: "Users",
-                columns: new[] { "Id", "CreationDate", "Email", "IsActive", "Name", "PasswordHash", "Role" },
-                values: new object[,]
-                {
-                    { new Guid("5a8f84ba-46ed-4d8a-a556-7b9db2494c41"), new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "admin@goodhamburger.com", true, "Admin User", "AQAAAAIAAYagAAAAEAECAwQFBgcICQoLDA0ODxCc1N01GG8CSt95mAzGrOnxFMB+OMut8DMObIEOtQ4qYg==", "Admin" },
-                    { new Guid("5e918c04-1634-41d8-8d7e-96f4059b8163"), new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "attendant@goodhamburger.com", true, "Attendant User", "AQAAAAIAAYagAAAAECEiIyQlJicoKSorLC0uLzCtdWvuomFlDAvcgACGSCjIhQZs2TMhgaf/oJ1Qm92jQQ==", "Attendant" },
-                    { new Guid("b153c761-3122-4eb8-bb26-297315846b4c"), new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "manager@goodhamburger.com", true, "Manager User", "AQAAAAIAAYagAAAAEBESExQVFhcYGRobHB0eHyD9Metf/8aK26Bucm/TMizq6kR+buFqIKvjtSdORrFiqw==", "Manager" }
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_OrderItems_ProductId",
                 schema: "GoodHamburger",
@@ -150,13 +114,6 @@ namespace GoodHamburger.Infra.Data.Migrations
                 table: "Orders",
                 column: "OrderNumber",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_Email",
-                schema: "GoodHamburger",
-                table: "Users",
-                column: "Email",
-                unique: true);
         }
 
         /// <inheritdoc />
@@ -172,10 +129,6 @@ namespace GoodHamburger.Infra.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Products",
-                schema: "GoodHamburger");
-
-            migrationBuilder.DropTable(
-                name: "Users",
                 schema: "GoodHamburger");
         }
     }

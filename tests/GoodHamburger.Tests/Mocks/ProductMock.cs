@@ -1,4 +1,4 @@
-﻿using GoodHamburger.Domain.Entities.Products;
+using GoodHamburger.Domain.Entities.Products;
 namespace GoodHamburger.Tests.Unit.Mocks
 {
     public static class ProductMock

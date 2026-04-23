@@ -1,4 +1,4 @@
-﻿namespace GoodHamburger.Domain.Entities.Products
+namespace GoodHamburger.Domain.Entities.Products
 {
     public enum ProductCategory
     {

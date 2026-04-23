@@ -23,79 +23,6 @@ namespace GoodHamburger.Infra.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("GoodHamburger.Domain.Entities.Auth.User", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("CreationDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetimeoffset")
-                        .HasDefaultValueSql("TODATETIMEOFFSET(SYSUTCDATETIME(), '+00:00')");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
-
-                    b.ToTable("Users", "GoodHamburger");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("5a8f84ba-46ed-4d8a-a556-7b9db2494c41"),
-                            CreationDate = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Email = "admin@goodhamburger.com",
-                            IsActive = true,
-                            Name = "Admin User",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAECAwQFBgcICQoLDA0ODxCc1N01GG8CSt95mAzGrOnxFMB+OMut8DMObIEOtQ4qYg==",
-                            Role = "Admin"
-                        },
-                        new
-                        {
-                            Id = new Guid("b153c761-3122-4eb8-bb26-297315846b4c"),
-                            CreationDate = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Email = "manager@goodhamburger.com",
-                            IsActive = true,
-                            Name = "Manager User",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBESExQVFhcYGRobHB0eHyD9Metf/8aK26Bucm/TMizq6kR+buFqIKvjtSdORrFiqw==",
-                            Role = "Manager"
-                        },
-                        new
-                        {
-                            Id = new Guid("5e918c04-1634-41d8-8d7e-96f4059b8163"),
-                            CreationDate = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Email = "attendant@goodhamburger.com",
-                            IsActive = true,
-                            Name = "Attendant User",
-                            PasswordHash = "AQAAAAIAAYagAAAAECEiIyQlJicoKSorLC0uLzCtdWvuomFlDAvcgACGSCjIhQZs2TMhgaf/oJ1Qm92jQQ==",
-                            Role = "Attendant"
-                        });
-                });
-
             modelBuilder.Entity("GoodHamburger.Domain.Entities.Orders.Order", b =>
                 {
                     b.Property<Guid>("Id")
@@ -110,8 +37,8 @@ namespace GoodHamburger.Infra.Data.Migrations
                         .HasDefaultValueSql("TODATETIMEOFFSET(SYSUTCDATETIME(), '+00:00')");
 
                     b.Property<decimal>("DiscountRate")
-                        .HasPrecision(5, 2)
-                        .HasColumnType("decimal(5,2)");
+                        .HasPrecision(5, 4)
+                        .HasColumnType("decimal(5,4)");
 
                     b.Property<long>("OrderNumber")
                         .HasColumnType("bigint");
@@ -247,15 +174,6 @@ namespace GoodHamburger.Infra.Data.Migrations
                             Name = "Refrigerante",
                             Price = 2.50m
                         });
-                });
-
-            modelBuilder.Entity("GoodHamburger.Domain.Entities.Orders.Order", b =>
-                {
-                    b.HasOne("GoodHamburger.Domain.Entities.Auth.User", null)
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("GoodHamburger.Domain.Entities.Orders.OrderItem", b =>
