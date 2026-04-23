@@ -1,5 +1,3 @@
-using GoodHamburger.Domain.Entities.Auth;
-
 namespace GoodHamburger.Application.Common.Interfaces
 {
     public interface ICurrentUser
@@ -8,7 +6,7 @@ namespace GoodHamburger.Application.Common.Interfaces
 
         string? Email { get; }
 
-        UserRole? Role { get; }
+        string? Role { get; }
 
         bool IsAuthenticated { get; }
     }

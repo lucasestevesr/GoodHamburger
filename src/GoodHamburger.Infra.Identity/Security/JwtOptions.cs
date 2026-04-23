@@ -1,4 +1,4 @@
-namespace GoodHamburger.Infra.Data.Security
+namespace GoodHamburger.Infra.Identity.Security
 {
     public sealed class JwtOptions
     {

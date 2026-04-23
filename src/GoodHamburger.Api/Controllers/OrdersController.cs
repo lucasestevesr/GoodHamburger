@@ -64,7 +64,7 @@ namespace GoodHamburger.Api.Controllers
             var updatedOrder = await orderService.AddItemAsync(orderId, request, ct);
             return Ok(updatedOrder);
         }
-        
+
         /// <summary>
         /// Atualiza o status de um pedido.
         /// </summary>

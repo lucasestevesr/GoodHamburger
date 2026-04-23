@@ -1,10 +1,8 @@
-using GoodHamburger.Domain.Entities.Auth;
-
 namespace GoodHamburger.Application.Auth.Interfaces
 {
     public interface IAccessTokenService
     {
-        string GenerateToken(User user);
+        string GenerateAccessToken(Guid userId, string? email, IEnumerable<string> roles);
 
         int GetExpiresInSeconds();
     }

@@ -95,6 +95,16 @@ namespace GoodHamburger.Tests.Unit.Tests.Domain
             Assert.Contains("maior que zero", exception.Message);
         }
 
+        [Fact]
+        public void AddItem_WhenProductIsNull_ThrowsArgumentNullException()
+        {
+            var order = CreateOrder();
+
+            var exception = Assert.Throws<ArgumentNullException>(() => order.AddItem(null!, 1));
+
+            Assert.Equal("product", exception.ParamName);
+        }
+
         #endregion
 
         #region Testes de atualizacao e remocao de itens
@@ -128,6 +138,62 @@ namespace GoodHamburger.Tests.Unit.Tests.Domain
             Assert.Equal(5.00m, order.SubTotal);
             Assert.Equal(0m, order.DiscountRate);
             Assert.Equal(5.00m, order.Total);
+        }
+
+        [Fact]
+        public void UpdateItemQuantity_WhenItemDoesNotExist_ThrowsDomainException()
+        {
+            var order = CreateOrder();
+
+            var exception = Assert.Throws<DomainException>(() => order.UpdateItemQuantity(Guid.NewGuid(), 1));
+
+            Assert.Contains("Item não encontrado", exception.Message);
+        }
+
+        [Fact]
+        public void RemoveItem_WhenItemDoesNotExist_ThrowsDomainException()
+        {
+            var order = CreateOrder();
+
+            var exception = Assert.Throws<DomainException>(() => order.RemoveItem(Guid.NewGuid()));
+
+            Assert.Contains("Item não encontrado", exception.Message);
+        }
+
+        [Fact]
+        public void AddItem_WhenOrderHasOnlyBurger_DoesNotApplyDiscount()
+        {
+            var order = CreateOrder();
+
+            order.AddItem(ProductMock.CreateBurger(), 1);
+
+            Assert.Equal(5.00m, order.SubTotal);
+            Assert.Equal(0m, order.DiscountRate);
+            Assert.Equal(5.00m, order.Total);
+        }
+
+        [Fact]
+        public void Order_ExposesConfiguredState()
+        {
+            var id = Guid.NewGuid();
+            var createdBy = Guid.NewGuid();
+            var creationDate = DateTimeOffset.UtcNow;
+
+            var order = new Order
+            {
+                Id = id,
+                OrderNumber = 123,
+                CreatedBy = createdBy,
+                CreationDate = creationDate,
+                Status = OrderStatus.Processing
+            };
+
+            Assert.Equal(id, order.Id);
+            Assert.Equal(123, order.OrderNumber);
+            Assert.Equal(createdBy, order.CreatedBy);
+            Assert.Equal(creationDate, order.CreationDate);
+            Assert.Equal(OrderStatus.Processing, order.Status);
+            Assert.Empty(order.Items);
         }
 
         #endregion

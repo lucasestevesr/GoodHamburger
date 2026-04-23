@@ -1,4 +1,4 @@
-﻿namespace GoodHamburger.Domain.Entities.Base
+namespace GoodHamburger.Domain.Entities.Base
 {
     public abstract class BaseEntity
     {

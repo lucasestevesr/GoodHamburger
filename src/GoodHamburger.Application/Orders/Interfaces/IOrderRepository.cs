@@ -1,4 +1,4 @@
-﻿using GoodHamburger.Domain.Entities.Orders;
+using GoodHamburger.Domain.Entities.Orders;
 
 namespace GoodHamburger.Application.Orders.Interfaces
 {

@@ -1,4 +1,3 @@
-using GoodHamburger.Domain.Entities.Auth;
 using GoodHamburger.Domain.Entities.Orders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -25,7 +24,7 @@ namespace GoodHamburger.Infra.Data.Configurations
                 .IsRequired();
 
             builder.Property(order => order.DiscountRate)
-                .HasPrecision(5, 2)
+                .HasPrecision(5, 4)
                 .IsRequired();
 
             builder.Property(order => order.Total)
@@ -40,10 +39,7 @@ namespace GoodHamburger.Infra.Data.Configurations
             builder.Property(order => order.CreatedBy)
                 .IsRequired();
 
-            builder.HasOne<User>()
-                .WithMany()
-                .HasForeignKey(order => order.CreatedBy)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.HasIndex(order => order.CreatedBy);
 
             builder.HasMany(order => order.Items)
                 .WithOne(item => item.Order)

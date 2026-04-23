@@ -1,5 +1,5 @@
-﻿using GoodHamburger.Application.Auth.Interfaces;
-using GoodHamburger.Infra.Data.Security;
+using GoodHamburger.Application.Auth.Interfaces;
+using GoodHamburger.Infra.Identity.Security;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,14 +17,13 @@ namespace GoodHamburger.CrossCutting.IoC
 
                 options.Issuer = section["Issuer"] ?? string.Empty;
                 options.Audience = section["Audience"] ?? string.Empty;
-                options.SecretKey = configuration["JWT_SECRET_KEY"] ?? section["SecretKey"] ?? string.Empty;
+                options.SecretKey = section["SecretKey"] ?? string.Empty;
                 options.ExpiresInMinutes = int.TryParse(section["ExpiresInMinutes"], out var expiresInMinutes)
                     ? expiresInMinutes
                     : 60;
             });
 
             services.AddScoped<IAccessTokenService, JwtAccessTokenService>();
-            services.AddScoped<IPasswordHasher, AspNetPasswordHasher>();
 
             return services;
         }

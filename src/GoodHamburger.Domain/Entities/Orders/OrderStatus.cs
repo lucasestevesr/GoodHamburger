@@ -1,4 +1,4 @@
-﻿namespace GoodHamburger.Domain.Entities.Orders
+namespace GoodHamburger.Domain.Entities.Orders
 {
     public enum OrderStatus
     {

@@ -1,9 +1,9 @@
 using System.Security.Claims;
 using System.Text;
 using GoodHamburger.Api.Security;
-using GoodHamburger.Domain.Entities.Auth;
-using GoodHamburger.Infra.Data.Security;
 using GoodHamburger.Application.Common.Interfaces;
+using GoodHamburger.Application.Identity;
+using GoodHamburger.Infra.Identity.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -15,8 +15,6 @@ namespace GoodHamburger.Api.Extensions
         {
             var jwtOptions = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
                 ?? throw new InvalidOperationException("Configuração JWT não encontrada.");
-
-            jwtOptions.SecretKey = configuration["JWT_SECRET_KEY"] ?? jwtOptions.SecretKey;
 
             if (string.IsNullOrWhiteSpace(jwtOptions.SecretKey))
                 throw new InvalidOperationException("JWT SecretKey não configurada.");
@@ -46,25 +44,25 @@ namespace GoodHamburger.Api.Extensions
                 options.AddPolicy(
                     AuthorizationPolicies.OrderManagement,
                     policy => policy.RequireRole(
-                        nameof(UserRole.Attendant),
-                        nameof(UserRole.Manager),
-                        nameof(UserRole.Admin)));
+                        IdentityRoles.Attendant,
+                        IdentityRoles.Manager,
+                        IdentityRoles.Admin));
 
                 options.AddPolicy(
                     AuthorizationPolicies.ProductManagement,
                     policy => policy.RequireRole(
-                        nameof(UserRole.Manager),
-                        nameof(UserRole.Admin)));
+                        IdentityRoles.Manager,
+                        IdentityRoles.Admin));
 
                 options.AddPolicy(
                     AuthorizationPolicies.CreateAttendantManagement,
                     policy => policy.RequireRole(
-                        nameof(UserRole.Manager),
-                        nameof(UserRole.Admin)));
+                        IdentityRoles.Manager,
+                        IdentityRoles.Admin));
 
                 options.AddPolicy(
                     AuthorizationPolicies.UserManagement,
-                    policy => policy.RequireRole(nameof(UserRole.Admin)));
+                    policy => policy.RequireRole(IdentityRoles.Admin));
             });
 
             return services;

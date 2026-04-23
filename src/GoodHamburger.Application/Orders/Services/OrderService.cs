@@ -1,10 +1,10 @@
 using GoodHamburger.Application.Common.Interfaces;
+using GoodHamburger.Application.Identity.Interfaces;
 using GoodHamburger.Application.Orders.Interfaces;
 using GoodHamburger.Application.Orders.Mappings;
 using GoodHamburger.Application.Orders.Requests;
 using GoodHamburger.Application.Orders.Responses;
 using GoodHamburger.Application.Products.Interfaces;
-using GoodHamburger.Application.Users.Interfaces;
 using GoodHamburger.Domain.Entities.Orders;
 using GoodHamburger.Domain.Entities.Products;
 
@@ -13,7 +13,7 @@ namespace GoodHamburger.Application.Orders.Services
     public sealed class OrderService(
         IOrderRepository orders,
         IProductRepository products,
-        IUserRepository users,
+        IIdentityService identityService,
         ICurrentUser currentUser) : IOrderService
     {
         public async Task<OrderResponse> CreateAsync(CreateOrderRequest request, CancellationToken ct)
@@ -161,7 +161,7 @@ namespace GoodHamburger.Application.Orders.Services
             if (!currentUser.IsAuthenticated || currentUser.UserId is null)
                 throw new UnauthorizedAccessException("Usuário não autenticado.");
 
-            var user = await users.GetByIdAsync(currentUser.UserId.Value, ct);
+            var user = await identityService.GetUserByIdAsync(currentUser.UserId.Value, ct);
             if (user is null || !user.IsActive)
                 throw new UnauthorizedAccessException("Usuário autenticado não encontrado ou inativo.");
 

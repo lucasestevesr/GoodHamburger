@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using GoodHamburger.Application.Common.Interfaces;
-using GoodHamburger.Domain.Entities.Auth;
 
 namespace GoodHamburger.Api.Security
 {
@@ -21,14 +20,7 @@ namespace GoodHamburger.Api.Security
 
         public string? Email => User?.FindFirstValue(ClaimTypes.Email);
 
-        public UserRole? Role
-        {
-            get
-            {
-                var value = User?.FindFirstValue(ClaimTypes.Role);
-                return Enum.TryParse<UserRole>(value, out var role) ? role : null;
-            }
-        }
+        public string? Role => User?.FindFirstValue(ClaimTypes.Role);
 
         public bool IsAuthenticated => User?.Identity?.IsAuthenticated ?? false;
     }

@@ -6,7 +6,7 @@ on:
       coverage_threshold:
         required: false
         type: number
-        default: 80
+        default: 100
 
 jobs:
   build-test:
@@ -41,15 +41,55 @@ jobs:
       - name: Install reportgenerator
         run: dotnet tool install dotnet-reportgenerator-globaltool --tool-path ./.tools
 
-      - name: Generate coverage summary (Domain only)
-        run: ./.tools/reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" -targetdir:"TestResults/CoverageReport" -reporttypes:"TextSummary" -assemblyfilters:"+GoodHamburger.Domain*"
+      - name: Generate Domain coverage report
+        run: ./.tools/reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" -targetdir:"TestResults/CoverageReport" -reporttypes:"Cobertura;MarkdownSummaryGithub" -assemblyfilters:"+GoodHamburger.Domain"
 
-      - name: Enforce Domain coverage threshold
+      - name: Publish Domain coverage summary
+        shell: pwsh
+        env:
+          COVERAGE_THRESHOLD: ${{ inputs.coverage_threshold }}
         run: |
-          echo "---- Coverage summary ----"
-          cat TestResults/CoverageReport/Summary.txt
-          LINE=$(grep -i "Line coverage" TestResults/CoverageReport/Summary.txt | head -n 1 | sed -E 's/.*Line coverage: ([0-9.]+)%.*/\1/')
-          echo "Domain Line coverage = $LINE%"
-          THRESHOLD=${{ inputs.coverage_threshold }}
-          echo "Required threshold = $THRESHOLD%"
-          awk "BEGIN {exit !($LINE >= $THRESHOLD)}"
+          $coveragePath = "TestResults/CoverageReport/Cobertura.xml"
+          if (-not (Test-Path $coveragePath)) {
+            throw "Coverage file was not generated."
+          }
+
+          [xml] $coverage = Get-Content $coveragePath
+          $domainPackage = $coverage.coverage.packages.package | Where-Object { $_.name -eq "GoodHamburger.Domain" } | Select-Object -First 1
+          if (-not $domainPackage) {
+            throw "GoodHamburger.Domain was not found in the coverage report."
+          }
+
+          $threshold = [double] $env:COVERAGE_THRESHOLD
+          $lineCoverage = [math]::Round(([double] $domainPackage.'line-rate') * 100, 2)
+          $branchCoverage = [math]::Round(([double] $domainPackage.'branch-rate') * 100, 2)
+          $status = if ($lineCoverage -ge $threshold) { "Passed" } else { "Failed" }
+          $reportSummary = "TestResults/CoverageReport/SummaryGithub.md"
+
+          if (Test-Path $reportSummary) {
+            Get-Content $reportSummary | Add-Content $env:GITHUB_STEP_SUMMARY
+            Add-Content $env:GITHUB_STEP_SUMMARY ""
+          }
+
+          Add-Content $env:GITHUB_STEP_SUMMARY "## Domain coverage gate"
+          Add-Content $env:GITHUB_STEP_SUMMARY ""
+          Add-Content $env:GITHUB_STEP_SUMMARY "| Metric | Current | Required | Status |"
+          Add-Content $env:GITHUB_STEP_SUMMARY "| --- | ---: | ---: | --- |"
+          Add-Content $env:GITHUB_STEP_SUMMARY "| Line coverage | $lineCoverage% | $threshold% | $status |"
+          Add-Content $env:GITHUB_STEP_SUMMARY "| Branch coverage | $branchCoverage% | Informational | - |"
+          Add-Content $env:GITHUB_STEP_SUMMARY ""
+          Add-Content $env:GITHUB_STEP_SUMMARY "### Domain classes"
+          Add-Content $env:GITHUB_STEP_SUMMARY ""
+          Add-Content $env:GITHUB_STEP_SUMMARY "| Class | Line | Branch |"
+          Add-Content $env:GITHUB_STEP_SUMMARY "| --- | ---: | ---: |"
+
+          foreach ($class in $domainPackage.classes.class | Sort-Object name) {
+            $classLineCoverage = [math]::Round(([double] $class.'line-rate') * 100, 2)
+            $classBranchCoverage = [math]::Round(([double] $class.'branch-rate') * 100, 2)
+            $className = $class.name -replace "^GoodHamburger\.Domain\.", ""
+            Add-Content $env:GITHUB_STEP_SUMMARY "| ``$className`` | $classLineCoverage% | $classBranchCoverage% |"
+          }
+
+          if ($lineCoverage -lt $threshold) {
+            throw "GoodHamburger.Domain line coverage is $lineCoverage%, below the required $threshold%."
+          }
