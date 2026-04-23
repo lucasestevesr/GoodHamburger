@@ -1,0 +1,40 @@
+<MudPaper Class="@($"section-card {Class}")" Elevation="0">
+    @if (!string.IsNullOrWhiteSpace(Title) || !string.IsNullOrWhiteSpace(Subtitle) || HeaderActions is not null)
+    {
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="section-card__header">
+            <MudStack Spacing="0">
+                @if (!string.IsNullOrWhiteSpace(Title))
+                {
+                    <MudText Typo="Typo.h6">@Title</MudText>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(Subtitle))
+                {
+                    <MudText Typo="Typo.body2" Class="section-card__subtitle">@Subtitle</MudText>
+                }
+            </MudStack>
+
+            @if (HeaderActions is not null)
+            {
+                <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                    @HeaderActions
+                </MudStack>
+            }
+        </MudStack>
+    }
+
+    @if (ChildContent is not null)
+    {
+        <div class="section-card__body">
+            @ChildContent
+        </div>
+    }
+</MudPaper>
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string Subtitle { get; set; } = string.Empty;
+    [Parameter] public string Class { get; set; } = string.Empty;
+    [Parameter] public RenderFragment? HeaderActions { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}
