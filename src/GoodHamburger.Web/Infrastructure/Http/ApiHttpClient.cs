@@ -97,7 +97,7 @@ public sealed class ApiHttpClient(HttpClient httpClient, AuthSession authSession
     private string ReadErrorMessage(System.Net.HttpStatusCode statusCode, string content, string? reasonPhrase)
     {
         if (statusCode == System.Net.HttpStatusCode.Unauthorized)
-            return "Nao autorizado. Verifique sua permissao ou refaca o login.";
+            return "Não autorizado. Verifique sua permissão ou refaça o login.";
 
         return ApiErrorReader.Read(content, reasonPhrase);
     }
