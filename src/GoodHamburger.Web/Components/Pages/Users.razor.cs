@@ -13,6 +13,7 @@ public partial class Users
     private string _roleFilter = AllRolesFilter;
     private string _statusFilter = AllStatusFilter;
     private bool _loadingData = true;
+    private string? _loadErrorMessage;
 
     private IEnumerable<UserResponse> FilteredUsers =>
         _users
@@ -25,12 +26,6 @@ public partial class Users
                 || (_statusFilter == "active" && user.IsActive)
                 || (_statusFilter == "inactive" && !user.IsActive))
             .OrderBy(user => user.Name);
-
-    private int ActiveUsers => _users.Count(user => user.IsActive);
-
-    private int Managers => _users.Count(user => string.Equals(user.Role, "Manager", StringComparison.OrdinalIgnoreCase));
-
-    private int Attendants => _users.Count(user => string.Equals(user.Role, "Attendant", StringComparison.OrdinalIgnoreCase));
 
     protected override async Task OnInitializedAsync()
     {
@@ -55,8 +50,14 @@ public partial class Users
         try
         {
             _loadingData = true;
+            _loadErrorMessage = null;
             _users.Clear();
             _users.AddRange(await UsersApi.ListAsync());
+        }
+        catch (Exception ex)
+        {
+            _loadErrorMessage = ex.Message;
+            Snackbar.Add(ex.Message, Severity.Error);
         }
         finally
         {

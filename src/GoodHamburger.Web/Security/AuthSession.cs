@@ -60,12 +60,6 @@ public sealed class AuthSession
         Changed?.Invoke();
     }
 
-    public void MarkInitialized()
-    {
-        IsInitialized = true;
-        Changed?.Invoke();
-    }
-
     public bool IsInRole(params string[] roles)
     {
         if (User is null || string.IsNullOrWhiteSpace(User.Role))

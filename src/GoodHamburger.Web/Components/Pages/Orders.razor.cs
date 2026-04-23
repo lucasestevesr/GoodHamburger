@@ -11,6 +11,7 @@ public partial class Orders
     private string _orderNumberFilter = string.Empty;
     private string _statusFilter = AllStatusFilter;
     private bool _loadingData = true;
+    private string? _loadErrorMessage;
 
     private IEnumerable<OrderSummaryResponse> FilteredOrders =>
         _orders
@@ -19,12 +20,6 @@ public partial class Orders
             .Where(order => _statusFilter == AllStatusFilter
                 || string.Equals(order.Status, _statusFilter, StringComparison.OrdinalIgnoreCase))
             .OrderByDescending(order => order.CreationDate);
-
-    private int ProcessingOrders => _orders.Count(order => string.Equals(order.Status, "Processing", StringComparison.OrdinalIgnoreCase));
-
-    private int CompletedOrders => _orders.Count(order => string.Equals(order.Status, "Completed", StringComparison.OrdinalIgnoreCase));
-
-    private decimal AverageTicket => _orders.Count == 0 ? 0 : _orders.Average(order => order.Total);
 
     protected override async Task OnInitializedAsync()
     {
@@ -43,8 +38,14 @@ public partial class Orders
         try
         {
             _loadingData = true;
+            _loadErrorMessage = null;
             _orders.Clear();
             _orders.AddRange(await OrdersApi.ListAsync());
+        }
+        catch (Exception ex)
+        {
+            _loadErrorMessage = ex.Message;
+            Snackbar.Add(ex.Message, Severity.Error);
         }
         finally
         {

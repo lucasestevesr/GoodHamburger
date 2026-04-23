@@ -73,6 +73,16 @@
                     <MudSkeleton Height="44px" />
                 </MudStack>
             }
+            else if (!string.IsNullOrWhiteSpace(_loadErrorMessage))
+            {
+                <EmptyState Icon="@Icons.Material.Filled.ErrorOutline"
+                            Title="Nao foi possivel carregar os usuarios"
+                            Description="@_loadErrorMessage"
+                            ActionText="Tentar novamente"
+                            ActionIcon="@Icons.Material.Filled.Refresh"
+                            OnAction="LoadAsync"
+                            AccentColor="Color.Error" />
+            }
             else if (FilteredUsers.Any())
             {
                 <MudTable Items="FilteredUsers" Hover="true" Breakpoint="Breakpoint.Sm">

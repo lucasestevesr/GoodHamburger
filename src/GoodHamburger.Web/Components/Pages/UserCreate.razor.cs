@@ -1,5 +1,4 @@
 using GoodHamburger.Web.Identity;
-using GoodHamburger.Web.Ui;
 using GoodHamburger.Web.Users.Requests;
 using MudBlazor;
 
@@ -10,12 +9,6 @@ public partial class UserCreate
     private readonly UpdateUserRequest _formModel = new() { Role = IdentityRoles.Attendant, IsActive = true };
     private MudForm? _form;
     private bool _loading;
-
-    private string DisplayName => string.IsNullOrWhiteSpace(_formModel.Name) ? "Nova conta" : _formModel.Name;
-
-    private string DisplayEmail => string.IsNullOrWhiteSpace(_formModel.Email) ? "email@empresa.com" : _formModel.Email;
-
-    private string DisplayRole => AdminVisuals.TranslateRole(_formModel.Role);
 
     protected override void OnInitialized()
     {

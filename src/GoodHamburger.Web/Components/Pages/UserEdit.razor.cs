@@ -1,5 +1,4 @@
 using GoodHamburger.Web.Identity;
-using GoodHamburger.Web.Ui;
 using GoodHamburger.Web.Users.Requests;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -14,12 +13,6 @@ public partial class UserEdit
     private MudForm? _form;
     private bool _loadingData = true;
     private bool _saving;
-
-    private string DisplayName => string.IsNullOrWhiteSpace(_formModel.Name) ? "Conta" : _formModel.Name;
-
-    private string DisplayEmail => string.IsNullOrWhiteSpace(_formModel.Email) ? "email@empresa.com" : _formModel.Email;
-
-    private string DisplayRole => AdminVisuals.TranslateRole(_formModel.Role);
 
     protected override async Task OnInitializedAsync()
     {
