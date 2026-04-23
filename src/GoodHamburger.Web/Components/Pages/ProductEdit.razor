@@ -5,9 +5,8 @@
 @inject ISnackbar Snackbar
 
 <MudStack Spacing="4">
-    <PageHeader Eyebrow="CARDAPIO"
-                Title="Editar item"
-                Subtitle="Atualize os dados do item mantendo a edicao simples e organizada.">
+    <PageHeader Eyebrow="Editar item"
+                Subtitle="Atualize os dados do item mantendo a edição simples e organizada.">
         <Actions>
             <MudButton Href="/products" Variant="Variant.Outlined" Color="Color.Default" StartIcon="@Icons.Material.Filled.ArrowBack">
                 Voltar
@@ -19,7 +18,7 @@
     {
         <EmptyState Icon="@Icons.Material.Filled.Block"
                     Title="Acesso restrito"
-                    Description="Seu perfil nao tem permissao para editar itens do cardapio."
+                    Description="Seu perfil não tem permissão para editar itens do cardápio."
                     AccentColor="Color.Error" />
     }
     else if (_loadingData)
@@ -41,20 +40,20 @@
                         <MudTextField @bind-Value="_request.Name" Label="Nome do item" Required="true" />
                     </MudItem>
                     <MudItem xs="12" md="4">
-                        <MudNumericField @bind-Value="_request.Price" Label="Preco" Required="true" Format="N2" />
+                        <MudNumericField @bind-Value="_request.Price" Label="Preço" Required="true" Format="N2" />
                     </MudItem>
                     <MudItem xs="12" md="4">
                         <MudSelect T="ProductCategory" @bind-Value="_request.Category" Label="Categoria">
-                            <MudSelectItem T="ProductCategory" Value="ProductCategory.Burger">Sanduiche</MudSelectItem>
+                            <MudSelectItem T="ProductCategory" Value="ProductCategory.Burger">Sanduíche</MudSelectItem>
                             <MudSelectItem T="ProductCategory" Value="ProductCategory.Side">Acompanhamento</MudSelectItem>
                             <MudSelectItem T="ProductCategory" Value="ProductCategory.Drink">Bebida</MudSelectItem>
                         </MudSelect>
                     </MudItem>
                     <MudItem xs="12">
-                        <MudTextField @bind-Value="_request.Description" Label="Descricao" Lines="4" />
+                        <MudTextField @bind-Value="_request.Description" Label="Descrição" Lines="4" />
                     </MudItem>
                     <MudItem xs="12">
-                        <MudSwitch T="bool" @bind-Value="_request.IsActive" Label="Disponivel para venda" Color="Color.Primary" />
+                        <MudSwitch T="bool" @bind-Value="_request.IsActive" Label="Disponível para venda" Color="Color.Primary" />
                     </MudItem>
                 </MudGrid>
             </MudForm>
