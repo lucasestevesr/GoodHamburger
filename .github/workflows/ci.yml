@@ -13,7 +13,7 @@ jobs:
   tests:
     uses: ./.github/workflows/run-tests.yml
     with:
-      coverage_threshold: 80
+      coverage_threshold: 100
 
   docker-build:
     name: Docker build
