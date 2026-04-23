@@ -1,0 +1,38 @@
+<div class="page-header">
+    <MudStack Row="true" Class="page-header__content" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+        <MudStack Spacing="1" Class="page-header__copy">
+            @if (!string.IsNullOrWhiteSpace(Eyebrow))
+            {
+                <MudText Typo="Typo.overline" Class="page-header__eyebrow">@Eyebrow</MudText>
+            }
+
+            <MudText Typo="Typo.h4" Class="page-header__title">@Title</MudText>
+            @if (!string.IsNullOrWhiteSpace(Subtitle))
+            {
+                <MudText Typo="Typo.body2" Class="page-header__subtitle">@Subtitle</MudText>
+            }
+
+            @if (Meta is not null)
+            {
+                <MudStack Row="true" Spacing="1" Class="mt-1 flex-wrap">
+                    @Meta
+                </MudStack>
+            }
+        </MudStack>
+
+        @if (Actions is not null)
+        {
+            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center" Class="page-header__actions">
+                @Actions
+            </MudStack>
+        }
+    </MudStack>
+</div>
+
+@code {
+    [Parameter] public string Eyebrow { get; set; } = string.Empty;
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string Subtitle { get; set; } = string.Empty;
+    [Parameter] public RenderFragment? Meta { get; set; }
+    [Parameter] public RenderFragment? Actions { get; set; }
+}

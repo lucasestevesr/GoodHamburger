@@ -1,0 +1,25 @@
+@page "/401"
+@inject AuthSession Auth
+
+<MudStack Spacing="4">
+    <PageHeader Eyebrow="401 Unauthorized"
+                Subtitle="Você não tem permissão para acessar esta área." />
+
+    <SectionCard Title="Acesso negado">
+        <MudText Typo="Typo.body1" Class="muted-text">
+            Sua sessão continua ativa, mas o seu perfil não permite abrir esta rota.
+        </MudText>
+
+        <MudStack Row="true" Spacing="2" Class="mt-4">
+            <MudButton Href="/" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.ArrowBack">
+                Voltar ao painel
+            </MudButton>
+            @if (!Auth.IsAuthenticated)
+            {
+                <MudButton Href="/login" Variant="Variant.Outlined" Color="Color.Default" StartIcon="@Icons.Material.Filled.Login">
+                    Ir para login
+                </MudButton>
+            }
+        </MudStack>
+    </SectionCard>
+</MudStack>

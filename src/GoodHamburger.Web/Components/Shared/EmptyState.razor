@@ -1,0 +1,32 @@
+<MudPaper Class="empty-state" Elevation="0">
+    <MudStack Spacing="2" AlignItems="AlignItems.Center">
+        <MudAvatar Color="@AccentColor" Variant="Variant.Filled" Size="Size.Large" Class="empty-state__icon">
+            <MudIcon Icon="@Icon" />
+        </MudAvatar>
+        <MudText Typo="Typo.h6">@Title</MudText>
+        <MudText Typo="Typo.body2" Align="Align.Center" Class="empty-state__text">@Description</MudText>
+
+        @if (!string.IsNullOrWhiteSpace(ActionText))
+        {
+            if (!string.IsNullOrWhiteSpace(Href))
+            {
+                <MudButton Href="@Href" Variant="Variant.Filled" Color="@AccentColor" StartIcon="@ActionIcon">@ActionText</MudButton>
+            }
+            else
+            {
+                <MudButton Variant="Variant.Filled" Color="@AccentColor" StartIcon="@ActionIcon" OnClick="OnAction">@ActionText</MudButton>
+            }
+        }
+    </MudStack>
+</MudPaper>
+
+@code {
+    [Parameter] public string Icon { get; set; } = Icons.Material.Filled.Inventory2;
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string Description { get; set; } = string.Empty;
+    [Parameter] public string ActionText { get; set; } = string.Empty;
+    [Parameter] public string ActionIcon { get; set; } = Icons.Material.Filled.Add;
+    [Parameter] public string? Href { get; set; }
+    [Parameter] public Color AccentColor { get; set; } = Color.Primary;
+    [Parameter] public EventCallback OnAction { get; set; }
+}

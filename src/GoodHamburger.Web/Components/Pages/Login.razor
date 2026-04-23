@@ -1,0 +1,36 @@
+@page "/login"
+@inject AuthApiClient AuthApi
+@inject AuthSession Auth
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<MudGrid Class="auth-shell">
+    <MudItem xs="12">
+        <MudPaper Class="login-panel" Elevation="0">
+            <MudStack Spacing="3">
+                <MudText Typo="Typo.overline" Class="page-header__eyebrow" Align="Align.Center">GoodHamburger</MudText>
+                <MudText Typo="Typo.body2" Class="muted-text">Acesse com seu perfil para gerenciar pedidos, cardápio ou usuários.</MudText>
+
+                <MudForm @ref="_form">
+                    <MudGrid Class="form-grid">
+                        <MudItem xs="12">
+                            <MudTextField @bind-Value="_request.Email" Label="E-mail" Required="true" InputType="InputType.Email" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudTextField @bind-Value="_request.Password" Label="Senha" Required="true" InputType="InputType.Password" />
+                        </MudItem>
+                    </MudGrid>
+                </MudForm>
+
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="_loading" OnClick="LoginAsync" FullWidth="true" StartIcon="@Icons.Material.Filled.Login">
+                    @if (_loading)
+                    {
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    }
+                    login
+                </MudButton>
+            </MudStack>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+

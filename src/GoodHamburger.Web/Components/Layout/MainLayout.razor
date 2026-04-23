@@ -1,0 +1,123 @@
+@inherits LayoutComponentBase
+@implements IDisposable
+@inject AuthSession Auth
+@inject AuthSessionStorage AuthStorage
+@inject NavigationManager Navigation
+
+<MudThemeProvider Theme="_theme" IsDarkMode="true" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout Class="admin-shell">
+    <MudAppBar Elevation="0" Fixed="true" Class="topbar">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="ToggleDrawer" />
+
+        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Class="topbar__brand">
+            <MudLink Href="/" Class="brand-link">GoodHamburger</MudLink>
+        </MudStack>
+
+        <MudSpacer />
+
+        @if (Auth.IsAuthenticated)
+        {
+            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                <MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">
+                    @AdminVisuals.TranslateRole(Auth.User?.Role ?? string.Empty)
+                </MudChip>
+                <MudText Typo="Typo.body2" Class="muted-text">@Auth.User?.Name</MudText>
+            </MudHidden>
+
+            <MudButton Variant="Variant.Text" Color="Color.Inherit" StartIcon="@Icons.Material.Filled.Logout" OnClick="Logout">
+                Logout
+            </MudButton>
+        }
+        else
+        {
+            <MudButton Href="/login" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Login">
+                Login
+            </MudButton>
+        }
+    </MudAppBar>
+
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="0" Class="sidebar" ClipMode="DrawerClipMode.Always" Variant="DrawerVariant.Responsive" Breakpoint="Breakpoint.Md">
+        <div class="sidebar__inner">
+
+            <MudNavMenu Class="sidebar-menu">
+                <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.SpaceDashboard">
+                    Home
+                </MudNavLink>
+                @if (Auth.CanManageOrders)
+                {
+                    <MudNavLink Href="/orders" Icon="@Icons.Material.Filled.ReceiptLong">Pedidos</MudNavLink>
+                }
+                @if (Auth.CanViewProducts)
+                {
+                    <MudNavLink Href="/products" Icon="@Icons.Material.Filled.RestaurantMenu">Cardápio</MudNavLink>
+                }
+                @if (Auth.CanManageAttendants)
+                {
+                    <MudNavLink Href="/users" Icon="@Icons.Material.Filled.Group">Usuários</MudNavLink>
+                }
+            </MudNavMenu>
+        </div>
+    </MudDrawer>
+
+    <MudMainContent Class="main-content">
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="main-container">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = true;
+    private readonly MudTheme _theme = new()
+    {
+        PaletteDark = new PaletteDark
+        {
+            Primary = "#d48a3a",
+            Secondary = "#6f7b8f",
+            Background = "#11151b",
+            Surface = "#181d25",
+            AppbarBackground = "#141922",
+            AppbarText = "#f5f7fa",
+            DrawerBackground = "#141922",
+            DrawerText = "#f5f7fa",
+            DrawerIcon = "#9ba4b5",
+            TextPrimary = "#f5f7fa",
+            TextSecondary = "#98a2b3",
+            LinesDefault = "rgba(255,255,255,0.08)",
+            Success = "#3ca374",
+            Warning = "#d8a04c",
+            Error = "#d46767",
+            Info = "#4f83cc"
+        },
+        LayoutProperties = new LayoutProperties
+        {
+            AppbarHeight = "64px",
+            DrawerWidthLeft = "260px"
+        }
+    };
+
+    protected override void OnInitialized()
+    {
+        Auth.Changed += StateHasChanged;
+    }
+
+    private void ToggleDrawer()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private async Task Logout()
+    {
+        await Auth.SignOutAsync(AuthStorage);
+        Navigation.NavigateTo("/login");
+    }
+
+    public void Dispose()
+    {
+        Auth.Changed -= StateHasChanged;
+    }
+}

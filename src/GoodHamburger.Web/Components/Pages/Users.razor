@@ -1,0 +1,152 @@
+@page "/users"
+@inject UsersApiClient UsersApi
+@inject AuthSession Auth
+@inject NavigationManager Navigation
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<MudStack Spacing="4">
+    <PageHeader Eyebrow="Usuários"
+                Subtitle="Gerencie contas, perfis e status da equipe em uma tabela clara e objetiva.
+                Admin gerencia gerentes e atendentes.
+                Gerentes gerenciam atendentes.
+                Atendentes não têm acesso.">
+        <Actions>
+            @if (Auth.CanManageAttendants)
+            {
+                <MudButton Href="/users/new" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.PersonAddAlt1">
+                    @(Auth.IsAdmin ? "Novo usuário" : "Novo atendente")
+                </MudButton>
+            }
+        </Actions>
+    </PageHeader>
+
+    @if (!Auth.IsAuthenticated)
+    {
+        <EmptyState Icon="@Icons.Material.Filled.Lock"
+                    Title="Sessão necessária"
+                    Description="Faça login para visualizar e administrar usuários."
+                    ActionText="Ir para login"
+                    ActionIcon="@Icons.Material.Filled.Login"
+                    Href="/login" />
+    }
+    else if (!Auth.CanManageAttendants)
+    {
+        <EmptyState Icon="@Icons.Material.Filled.Block"
+                    Title="Acesso restrito"
+                    Description="Seu perfil não possui permissão para gerenciar usuários."
+                    AccentColor="Color.Error" />
+    }
+    else if (Auth.IsAdmin)
+    {
+        <SectionCard Title="Usuários cadastrados">
+            <MudGrid Class="filters-grid mb-4">
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_search"
+                                  Label="Buscar por nome ou e-mail"
+                                  Immediate="true"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Search" />
+                </MudItem>
+                <MudItem xs="12" md="3">
+                    <MudSelect T="string" @bind-Value="_roleFilter" Label="Perfil">
+                        <MudSelectItem T="string" Value="@AllRolesFilter">Todos</MudSelectItem>
+                        <MudSelectItem T="string" Value="@("Admin")">Administrador</MudSelectItem>
+                        <MudSelectItem T="string" Value="@("Manager")">Gerente</MudSelectItem>
+                        <MudSelectItem T="string" Value="@("Attendant")">Atendente</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" md="3">
+                    <MudSelect T="string" @bind-Value="_statusFilter" Label="Status">
+                        <MudSelectItem T="string" Value="@AllStatusFilter">Todos</MudSelectItem>
+                        <MudSelectItem T="string" Value="@("active")">Ativo</MudSelectItem>
+                        <MudSelectItem T="string" Value="@("inactive")">Inativo</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+            </MudGrid>
+
+            @if (_loadingData)
+            {
+                <MudStack Spacing="2">
+                    <MudSkeleton Height="44px" />
+                    <MudSkeleton Height="44px" />
+                    <MudSkeleton Height="44px" />
+                </MudStack>
+            }
+            else if (!string.IsNullOrWhiteSpace(_loadErrorMessage))
+            {
+                <EmptyState Icon="@Icons.Material.Filled.ErrorOutline"
+                            Title="Nao foi possivel carregar os usuarios"
+                            Description="@_loadErrorMessage"
+                            ActionText="Tentar novamente"
+                            ActionIcon="@Icons.Material.Filled.Refresh"
+                            OnAction="LoadAsync"
+                            AccentColor="Color.Error" />
+            }
+            else if (FilteredUsers.Any())
+            {
+                <MudTable Items="FilteredUsers" Hover="true" Breakpoint="Breakpoint.Sm">
+                    <HeaderContent>
+                        <MudTh>Usuário</MudTh>
+                        <MudTh>Perfil</MudTh>
+                        <MudTh>Status</MudTh>
+                        <MudTh>Criado em</MudTh>
+                        <MudTh>Ações</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Usuário">
+                            <MudStack Spacing="0">
+                                <MudText Typo="Typo.subtitle2">@context.Name</MudText>
+                                <MudText Typo="Typo.caption" Class="muted-text">@context.Email</MudText>
+                            </MudStack>
+                        </MudTd>
+                        <MudTd DataLabel="Perfil">
+                            <MudChip T="string"
+                                     Size="Size.Small"
+                                     Variant="Variant.Outlined"
+                                     Color="@AdminVisuals.GetRoleColor(context.Role)">
+                                @AdminVisuals.TranslateRole(context.Role)
+                            </MudChip>
+                        </MudTd>
+                        <MudTd DataLabel="Status">
+                            <MudChip T="string"
+                                     Size="Size.Small"
+                                     Variant="Variant.Outlined"
+                                     Color="@AdminVisuals.GetAvailabilityColor(context.IsActive)">
+                                @AdminVisuals.GetAvailabilityText(context.IsActive)
+                            </MudChip>
+                        </MudTd>
+                        <MudTd DataLabel="Criado em">@AdminVisuals.FormatDate(context.CreationDate)</MudTd>
+                        <MudTd DataLabel="Ações">
+                            <MudStack Row="true" Spacing="1">
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" Href="@($"/users/{context.Id}/edit")" />
+                                <MudIconButton Icon="@Icons.Material.Filled.DeleteOutline" Color="Color.Error" OnClick="@(() => DeleteAsync(context))" />
+                            </MudStack>
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            }
+            else
+            {
+                <EmptyState Icon="@Icons.Material.Filled.GroupOff"
+                            Title="Nenhum usuário encontrado"
+                            Description="Ajuste os filtros ou crie uma nova conta."
+                            ActionText="Criar usuário"
+                            ActionIcon="@Icons.Material.Filled.PersonAddAlt1"
+                            Href="/users/new" />
+            }
+        </SectionCard>
+    }
+    else
+    {
+        <SectionCard Title="Permissão de gerente">
+            <MudText Typo="Typo.body2" Class="muted-text">
+                Gerentes podem cadastrar atendentes, mas a administração completa de usuários continua restrita ao administrador.
+            </MudText>
+
+            <MudButton Href="/users/new" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.PersonAddAlt1" Class="mt-4">
+                Cadastrar atendente
+            </MudButton>
+        </SectionCard>
+    }
+</MudStack>

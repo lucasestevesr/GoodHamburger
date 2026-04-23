@@ -1,0 +1,136 @@
+@page "/products"
+@inject ProductsApiClient ProductsApi
+@inject AuthSession Auth
+@inject NavigationManager Navigation
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<MudStack Spacing="4">
+    <PageHeader Eyebrow="CARDÁPIO"
+                Subtitle="Gerencie os produtos, sua categoria, preço e disponibilidade. 
+                Atendentes não têm permissão para criar ou editar itens.">
+        <Actions>
+            @if (Auth.CanManageProducts)
+            {
+                <MudButton Href="/products/new" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
+                    Novo item
+                </MudButton>
+            }
+        </Actions>
+    </PageHeader>
+
+    @if (!Auth.IsAuthenticated)
+    {
+        <EmptyState Icon="@Icons.Material.Filled.Lock"
+                    Title="Sessão necessária"
+                    Description="Faça login para visualizar o cardápio."
+                    ActionText="Ir para login"
+                    ActionIcon="@Icons.Material.Filled.Login"
+                    Href="/login" />
+    }
+    else if (!Auth.CanViewProducts)
+    {
+        <EmptyState Icon="@Icons.Material.Filled.Block"
+                    Title="Acesso restrito"
+                    Description="Seu perfil não possui permissão para visualizar o cardápio."
+                    AccentColor="Color.Error" />
+    }
+    else
+    {
+        <SectionCard Title="Itens">
+            <MudGrid Class="filters-grid mb-4">
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_search"
+                                  Label="Buscar no Cardápio"
+                                  Placeholder="Nome ou descrição"
+                                  Immediate="true"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Search" />
+                </MudItem>
+                <MudItem xs="12" md="3">
+                    <MudSelect T="string" @bind-Value="_categoryFilter" Label="Categoria">
+                        <MudSelectItem T="string" Value="@AllCategoryFilter">Todas</MudSelectItem>
+                        <MudSelectItem T="string" Value="@("Burger")">Sanduíche</MudSelectItem>
+                        <MudSelectItem T="string" Value="@("Side")">Acompanhamento</MudSelectItem>
+                        <MudSelectItem T="string" Value="@("Drink")">Bebida</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" md="3">
+                    <MudSelect T="string" @bind-Value="_availabilityFilter" Label="Disponibilidade">
+                        <MudSelectItem T="string" Value="@AllAvailabilityFilter">Todas</MudSelectItem>
+                        <MudSelectItem T="string" Value="@("active")">Disponível</MudSelectItem>
+                        <MudSelectItem T="string" Value="@("inactive")">Indisponível</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+            </MudGrid>
+
+            @if (_loadingData)
+            {
+                <MudStack Spacing="2">
+                    <MudSkeleton Height="44px" />
+                    <MudSkeleton Height="44px" />
+                    <MudSkeleton Height="44px" />
+                </MudStack>
+            }
+            else if (FilteredProducts.Any())
+            {
+                <MudTable Items="FilteredProducts" Hover="true" Breakpoint="Breakpoint.Sm">
+                    <HeaderContent>
+                        <MudTh>Item</MudTh>
+                        <MudTh>Categoria</MudTh>
+                        <MudTh>Preço</MudTh>
+                        <MudTh>Disponibilidade</MudTh>
+                        <MudTh>Ações</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Item">
+                            <MudStack Spacing="0">
+                                <MudText Typo="Typo.subtitle2">@context.Name</MudText>
+                                @if (!string.IsNullOrWhiteSpace(context.Description))
+                                {
+                                    <MudText Typo="Typo.caption" Class="muted-text">@context.Description</MudText>
+                                }
+                            </MudStack>
+                        </MudTd>
+                        <MudTd DataLabel="Categoria">
+                            <MudChip T="string"
+                                     Size="Size.Small"
+                                     Variant="Variant.Outlined"
+                                     Color="@AdminVisuals.GetCategoryColor(context.Category)">
+                                @AdminVisuals.TranslateCategory(context.Category)
+                            </MudChip>
+                        </MudTd>
+                        <MudTd DataLabel="Preço">@context.Price.ToString("C")</MudTd>
+                        <MudTd DataLabel="Disponibilidade">
+                            <MudChip T="string"
+                                     Size="Size.Small"
+                                     Variant="Variant.Outlined"
+                                     Color="@AdminVisuals.GetAvailabilityColor(context.IsActive)">
+                                @AdminVisuals.GetAvailabilityText(context.IsActive)
+                            </MudChip>
+                        </MudTd>
+                        <MudTd DataLabel="Ações">
+                            @if (Auth.CanManageProducts)
+                            {
+                                <MudStack Row="true" Spacing="1">
+                                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" Href="@($"/products/{context.Id}/edit")" />
+                                    <MudIconButton Icon="@(context.IsActive ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility)" Color="Color.Warning" OnClick="@(() => ToggleStatusAsync(context))" />
+                                    <MudIconButton Icon="@Icons.Material.Filled.DeleteOutline" Color="Color.Error" OnClick="@(() => DeleteAsync(context))" />
+                                </MudStack>
+                            }
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            }
+            else
+            {
+                <EmptyState Icon="@Icons.Material.Filled.RestaurantMenu"
+                            Title="Nenhum item encontrado"
+                            Description="Altere os filtros ou cadastre um novo item."
+                            ActionText="@(Auth.CanManageProducts ? "Cadastrar item" : string.Empty)"
+                            ActionIcon="@Icons.Material.Filled.Add"
+                            Href="@(Auth.CanManageProducts ? "/products/new" : null)" />
+            }
+        </SectionCard>
+    }
+</MudStack>

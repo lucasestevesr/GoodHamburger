@@ -1,4 +1,4 @@
-name: Run tests (with coverage)
+name: tests
 
 on:
   workflow_call:
@@ -42,7 +42,7 @@ jobs:
         run: dotnet tool install dotnet-reportgenerator-globaltool --tool-path ./.tools
 
       - name: Generate Domain coverage report
-        run: ./.tools/reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" -targetdir:"TestResults/CoverageReport" -reporttypes:"Cobertura;MarkdownSummaryGithub" -assemblyfilters:"+GoodHamburger.Domain"
+        run: ./.tools/reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" -targetdir:"TestResults/CoverageReport" -reporttypes:"Cobertura" -assemblyfilters:"+GoodHamburger.Domain"
 
       - name: Publish Domain coverage summary
         shell: pwsh
@@ -64,21 +64,15 @@ jobs:
           $lineCoverage = [math]::Round(([double] $domainPackage.'line-rate') * 100, 2)
           $branchCoverage = [math]::Round(([double] $domainPackage.'branch-rate') * 100, 2)
           $status = if ($lineCoverage -ge $threshold) { "Passed" } else { "Failed" }
-          $reportSummary = "TestResults/CoverageReport/SummaryGithub.md"
 
-          if (Test-Path $reportSummary) {
-            Get-Content $reportSummary | Add-Content $env:GITHUB_STEP_SUMMARY
-            Add-Content $env:GITHUB_STEP_SUMMARY ""
-          }
-
-          Add-Content $env:GITHUB_STEP_SUMMARY "## Domain coverage gate"
+          Add-Content $env:GITHUB_STEP_SUMMARY "## Coverage"
           Add-Content $env:GITHUB_STEP_SUMMARY ""
           Add-Content $env:GITHUB_STEP_SUMMARY "| Metric | Current | Required | Status |"
           Add-Content $env:GITHUB_STEP_SUMMARY "| --- | ---: | ---: | --- |"
           Add-Content $env:GITHUB_STEP_SUMMARY "| Line coverage | $lineCoverage% | $threshold% | $status |"
           Add-Content $env:GITHUB_STEP_SUMMARY "| Branch coverage | $branchCoverage% | Informational | - |"
           Add-Content $env:GITHUB_STEP_SUMMARY ""
-          Add-Content $env:GITHUB_STEP_SUMMARY "### Domain classes"
+          Add-Content $env:GITHUB_STEP_SUMMARY "### Domain"
           Add-Content $env:GITHUB_STEP_SUMMARY ""
           Add-Content $env:GITHUB_STEP_SUMMARY "| Class | Line | Branch |"
           Add-Content $env:GITHUB_STEP_SUMMARY "| --- | ---: | ---: |"
