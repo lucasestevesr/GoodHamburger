@@ -1,11 +1,12 @@
 # GoodHamburger
 
-## Migrations
+API REST em .NET 8 para registrar pedidos da lanchonete Good Hamburger.
 
-```bash
-dotnet ef migrations add InitialDataModel --project src/GoodHamburger.Infra.Data --startup-project src/GoodHamburger.Api --context AppDbContext --output-dir Migrations
-```
+### Docs
 
-```bash
-dotnet ef database update --project src/GoodHamburger.Infra.Data --startup-project src/GoodHamburger.Api --context AppDbContext
-```
+- [Configuração e execução local](docs/configuration.md)
+- [Requisitos do Projeto](docs/challenge-delivery.md)
+- [Decisões de Arquitetura](docs/architecture.md)
+- [Guidelines do projeto](docs/api-design-guidelines.md)
+- [Autenticação e Autorização](docs/auth.md)
+- [UI (Blazor)](docs/ui.md)

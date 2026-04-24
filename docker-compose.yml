@@ -9,6 +9,16 @@ services:
       - "1433:1433"
     volumes:
       - sqlserver-data:/var/opt/mssql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$${MSSQL_SA_PASSWORD}\" -C -Q \"SELECT 1\" || exit 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 20s
 
   api:
     build:
@@ -16,14 +26,15 @@ services:
       dockerfile: src/GoodHamburger.Api/Dockerfile
     container_name: goodhamburger-api
     depends_on:
-      - sqlserver
+      sqlserver:
+        condition: service_healthy
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
       ASPNETCORE_URLS: "http://+:8080"
       App__UseHttpsRedirection: "false"
       ConnectionStrings__Default: "Server=sqlserver,1433;Database=GoodHamburgerDb;User Id=sa;Password=${SQL_PASSWORD:-GoodHamburger@12345};TrustServerCertificate=True"
-      Jwt__SecretKey: "${JWT_SECRET_KEY:?JWT_SECRET_KEY must be configured}"
+      Jwt__SecretKey: "${JWT_SECRET_KEY:-GoodHamburger.SecretKey.Jwt.Local.Test.2026.With.More.Than.64.Characters}"
       Jwt__Issuer: "GoodHamburger.Api"
       Jwt__Audience: "GoodHamburger.User"
       Jwt__ExpiresInMinutes: "60"

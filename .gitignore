@@ -77,6 +77,7 @@ $RECYCLE.BIN/
 # Environment files
 .env
 .env.*
+!.env.example
 
 # Local dotnet scratch (agent/dev)
 .dotnet_home/
