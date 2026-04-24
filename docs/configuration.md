@@ -73,8 +73,11 @@ docker compose up sqlserver -d
 ```
 
 Essa opção faz mais sentido quando o objetivo é colocar breakpoints, acompanhar logs da API e iterar no código localmente.
+Esse fluxo depende de um SQL Server acessível em `localhost:1433`; se o banco não estiver rodando, a API não sobe porque aplica migrations automaticamente no startup.
 
 ### API
+
+Rode o comando a partir da raiz do repositório:
 
 ```powershell
 dotnet run --project .\src\GoodHamburger.Api

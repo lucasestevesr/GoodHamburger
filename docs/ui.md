@@ -29,25 +29,38 @@ O projeto `GoodHamburger.Web` implementa uma UI Blazor Server/Interactive Server
 - Autentica o usuário na API.
 - Mantém a sessão em memória no circuito Blazor.
 - Redireciona para o painel após sucesso.
+![login](./images/tela-login.png)
+
+### Home
+
+![home](./images/tela-home.png)
 
 ### Pedidos
 
 - Lista pedidos.
 - Filtra por `OrderNumber`, não por `Guid`.
+![Pedidos](./images/tela-order1.png)
 - Cria pedido com até um item por categoria.
 - Visualiza detalhes do pedido.
 - Adiciona item, altera quantidade, remove item, muda status e remove pedido.
-
+-![Criar Pedido](./images/tela-cratedOrder1.png)
+-![Adicionar Item ao Pedido](./images/tela-OrderAddItem.png)
+-![Pedido Criado](./images/tela-OrderCreated1.png)
 ### Produtos
 
 - Disponível para `Admin` e `Manager`.
 - Cria, lista, edita, ativa/inativa e remove produtos.
 - Usa as categorias `Burger`, `Side` e `Drink`.
-
+-![Cardápio](./images/tela-Cardapio.png)
+-![Adicionar ao Cardápio](./images/AddCardapio.png)
 ### Usuários
 
 - `Admin`: cria, lista, edita e remove usuários.
 - `Manager`: cadastra atendentes pela rota específica de attendants.
+-![Usuários](./images/tela-AddUser.png)
+
+### Erro Unauthorized
+-![401](./images/tela-401.png)
 
 ## Observações
 
