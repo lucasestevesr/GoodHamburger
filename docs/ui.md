@@ -47,7 +47,7 @@ O projeto `GoodHamburger.Web` implementa uma UI Blazor Server/Interactive Server
 - Visualiza detalhes do pedido.
 - Adiciona item, altera quantidade, remove item, muda status e remove pedido.
 
-![Criar Pedido](./images/tela-cratedOrder1.png)
+![Criar Pedido](./images/tela-createOrder1.png)
 
 ![Adicionar Item ao Pedido](./images/tela-orderAddItem.png)
 
@@ -68,7 +68,7 @@ O projeto `GoodHamburger.Web` implementa uma UI Blazor Server/Interactive Server
 - `Admin`: cria, lista, edita e remove usuários.
 - `Manager`: cadastra atendentes pela rota específica de attendants.
 
-![Usuários](./images/tela-AddUser.png)
+![Usuários](./images/tela-addUSER.png)
 
 ### Erro Unauthorized
 
