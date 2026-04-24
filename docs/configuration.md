@@ -55,7 +55,12 @@ Acesse:
 - Swagger: http://localhost:18080/swagger
 - Web: http://localhost:18081
 
-Se quiser customizar senha do SQL Server ou a chave JWT do compose, copie `.env.example` para `.env` e ajuste os valores.
+Se quiser customizar a senha do SQL Server ou a chave JWT do compose, crie um arquivo `.env` na raiz com este conteúdo e ajuste os valores:
+
+```shell
+JWT_SECRET_KEY=GoodHamburger.SecretKey.Jwt.Local.Test.2026.With.More.Than.64.Characters
+SQL_PASSWORD=SuaSenha
+```
 
 ## Execução com `dotnet run`
 
