@@ -49,7 +49,7 @@ O projeto `GoodHamburger.Web` implementa uma UI Blazor Server/Interactive Server
 
 ![Criar Pedido](./images/tela-createOrder1.png)
 
-![Adicionar Item ao Pedido](./images/tela-orderAddItem.png)
+![Adicionar Item ao Pedido](./images/tela-OrderAddItem.png)
 
 ![Pedido Criado](./images/tela-OrderCreated1.png)
 
@@ -59,7 +59,7 @@ O projeto `GoodHamburger.Web` implementa uma UI Blazor Server/Interactive Server
 - Cria, lista, edita, ativa/inativa e remove produtos.
 - Usa as categorias `Burger`, `Side` e `Drink`.
 
-![Cardápio](./images/tela-cardapio.png)
+![Cardápio](./images/tela-Cardapio.png)
 
 ![Adicionar ao Cardápio](./images/tela-addCardapio.png)
 
@@ -68,7 +68,7 @@ O projeto `GoodHamburger.Web` implementa uma UI Blazor Server/Interactive Server
 - `Admin`: cria, lista, edita e remove usuários.
 - `Manager`: cadastra atendentes pela rota específica de attendants.
 
-![Usuários](./images/tela-addUSER.png)
+![Usuários](./images/tela-AddUSER.png)
 
 ### Erro Unauthorized
 
